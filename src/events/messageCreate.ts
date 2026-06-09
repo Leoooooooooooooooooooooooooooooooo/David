@@ -62,14 +62,14 @@ export default {
 
     if (isGif(message)) {
       const updated = await loseSanity(userId, guildId, SANITY_LOSS_PER_GIF);
-      await message.react('🧠');
+      await message.react('<:davidsanity:1513942977586659420>');
 
       if (updated.sanity <= 0) {
         await killUser(userId);
         const deathMessages = [
-          `💀 **${message.author.displayName}** died lol`,
-          `💀 **${message.author.displayName}** was driven crazy by the sounds`,
-          `💀 **${message.author.displayName}** GIFed like a noob`,
+          `<:daviddeath:1513943034738245794> **${message.author.displayName}** died lol`,
+          `<:daviddeath:1513943034738245794> **${message.author.displayName}** was driven crazy by the sounds`,
+          `<:daviddeath:1513943034738245794> **${message.author.displayName}** GIFed like a noob`,
         ];
         const msg = deathMessages[Math.floor(Math.random() * deathMessages.length)];
         if (isSendableChannel(message.channel)) await message.channel.send(msg);
