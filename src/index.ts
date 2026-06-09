@@ -1,6 +1,6 @@
 import { Client, Collection, Events, GatewayIntentBits, Interaction } from 'discord.js';
 import dotenv from 'dotenv';
-import { initDb } from './db/index.js';
+import { initDb, regenSanityAll } from './db/index.js';
 
 // Events
 import readyEvent from './events/ready.js';
@@ -59,7 +59,11 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 
 // Init DB then login
 initDb()
-  .then(() => client.login(process.env.DISCORD_TOKEN))
+  .then(() => {
+    // Regen 1 sanity per 5 minutes for all users
+    setInterval(() => regenSanityAll(), 5 * 60 * 1000);
+    return client.login(process.env.DISCORD_TOKEN);
+  })
   .catch(err => {
     console.error('Failed to start:', err);
     process.exit(1);

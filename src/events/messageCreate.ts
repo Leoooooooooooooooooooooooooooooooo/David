@@ -3,7 +3,7 @@ import { Events, Message, TextChannel, NewsChannel } from 'discord.js';
 function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
   return channel && typeof channel.send === 'function';
 }
-import { addXp, addStatus, loseSanity, killUser } from '../db/index';
+import { addXp, addStatus, loseSanity, killUser, randomizeTemperature } from '../db/index.js';
 
 const XP_PER_MESSAGE = 5;
 const SANITY_LOSS_PER_GIF = 10;
@@ -49,10 +49,13 @@ export default {
       const oldLevel = Math.floor((updated.xp - XP_PER_MESSAGE) / 100) + 1;
       const newLevel = updated.level;
 
-      if (newLevel > oldLevel && isSendableChannel(message.channel)) {
-        await message.channel.send(
-          `📈 **${message.author.displayName}** leveled up to **Level ${newLevel}**! (probably won't help them)`
-        );
+      if (newLevel > oldLevel) {
+        await randomizeTemperature(userId);
+        if (isSendableChannel(message.channel)) {
+          await message.channel.send(
+            `📈 **${message.author.displayName}** leveled up to **Level ${newLevel}**! (probably won't help them)`
+          );
+        }
       }
     }
 

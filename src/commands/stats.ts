@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { getOrCreateUser } from '../db/index';
+import { getOrCreateUser } from '../db/index.js';
 
 export const data = new SlashCommandBuilder()
   .setName('stats')
@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '🎖️ Level', value: `${user.level}`, inline: true },
       { name: '📣 Status', value: `${user.status}`, inline: true },
       { name: '🧠 Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
-      { name: '🌡️ Temperature', value: `${user.temperature}°F`, inline: true },
+      { name: '🌡️ Temperature', value: `${user.temperature}K`, inline: true },
       { name: '💀 Deaths', value: `${user.deaths}`, inline: true }
     )
     .setFooter({ text: getSanityMessage(user.sanity) })
