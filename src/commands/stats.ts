@@ -26,11 +26,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     .setColor(getSanityColor(user.sanity))
     .addFields(
       { name: '<:davidexp:1513930783935565975> XP', value: `${user.xp} XP`, inline: true },
-      { name: '🎖️ Level', value: `${user.level}`, inline: true },
-      { name: '📣 Status', value: `${user.status}`, inline: true },
-      { name: '🧠 Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
+      { name: '<:davidlevel:1513942942241390744> Level', value: `${user.level}`, inline: true },
+      { name: '<:davidstatus:1513942961191129292> Status', value: `${user.status}`, inline: true },
+      { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
       { name: '🌡️ Temperature', value: `${user.temperature}K`, inline: true },
-      { name: '💀 Deaths', value: `${user.deaths}`, inline: true }
+      { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true }
     )
     .setFooter({ text: getSanityMessage(user.sanity) })
     .setTimestamp();
