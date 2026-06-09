@@ -51,9 +51,9 @@ function getSanityColor(sanity: number): number {
 }
 
 function getSanityMessage(sanity: number): string {
-  if (sanity === 100) return 'Totally fine. Suspiciously fine.';
-  if (sanity > 70) return 'Holding together.';
-  if (sanity > 40) return 'Questionable life choices.';
+  if (sanity === 100) return 'Just send a GIF trust me bro.';
+  if (sanity > 70) return 'Okay enough GIFs bro.';
+  if (sanity > 40) return 'Seriously bro no more GIFs.';
   if (sanity > 10) return 'Please stop sending GIFs.';
   return 'One GIF away from death.';
 }
