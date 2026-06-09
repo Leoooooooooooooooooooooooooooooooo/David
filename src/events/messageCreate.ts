@@ -47,7 +47,7 @@ export default {
         await randomizeTemperature(userId);
         if (isSendableChannel(message.channel)) {
           await message.channel.send(
-            `📈 **${message.author.displayName}** leveled up to **Level ${newLevel}**! (probably won't help them)`
+            `⚠️ **${message.author.displayName}** leveled up to **Level ${newLevel}**! Super Sigma! EVERYONE START FREAKING OUT RIGHT NOW!!!!!111!!!!`
           );
         }
       }
@@ -67,16 +67,16 @@ export default {
       if (updated.sanity <= 0) {
         await killUser(userId);
         const deathMessages = [
-          `💀 **${message.author.displayName}** has sent one too many GIFs and died. All stats reset. Embarrassing.`,
-          `💀 **${message.author.displayName}**'s sanity finally gave out. Stats wiped. The GIFs were not worth it.`,
-          `💀 **${message.author.displayName}** is dead. Cause of death: GIFs. All progress lost.`,
+          `💀 **${message.author.displayName}** died lol`,
+          `💀 **${message.author.displayName}** was driven crazy by the sounds`,
+          `💀 **${message.author.displayName}** GIFed like a noob`,
         ];
         const msg = deathMessages[Math.floor(Math.random() * deathMessages.length)];
         if (isSendableChannel(message.channel)) await message.channel.send(msg);
       } else if (updated.sanity <= 20) {
         if (isSendableChannel(message.channel)) {
           await message.channel.send(
-            `⚠️ **${message.author.displayName}** has ${updated.sanity} sanity left. Tread carefully.`
+            `⚠️ **${message.author.displayName}** has ${updated.sanity} sanity left and is hearing the noises`
           );
         }
       }
