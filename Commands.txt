@@ -1,4 +1,4 @@
-/mnt/Backup/docker/DavidBot/discord-bot
+cd /mnt/Backup/docker/DavidBot/discord-bot
 sudo git fetch origin
 sudo git reset --hard origin/main
 sudo docker compose up -d --build
