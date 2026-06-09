@@ -14,6 +14,7 @@ const xpCooldowns = new Map<string, number>();
 const XP_COOLDOWN_MS = 10_000;
 
 function isGif(message: Message): boolean {
+  if (message.content.match(/\.gif(\?|$)/i)) return true;
   if (message.content.match(/https?:\/\/(tenor\.com|giphy\.com|media\.tenor\.com)\//i)) return true;
   for (const attachment of message.attachments.values()) {
     if (attachment.contentType === 'image/gif' || attachment.name?.endsWith('.gif')) return true;
