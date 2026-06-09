@@ -19,14 +19,38 @@ export async function initDb(): Promise<void> {
       level         INTEGER NOT NULL DEFAULT 1,
       status        INTEGER NOT NULL DEFAULT 0,
       sanity        INTEGER NOT NULL DEFAULT 100,
-      temperature   INTEGER NOT NULL DEFAULT 72,
+      temperature   BIGINT NOT NULL DEFAULT 293,
       deaths        INTEGER NOT NULL DEFAULT 0,
       created_at    TIMESTAMP DEFAULT NOW(),
       updated_at    TIMESTAMP DEFAULT NOW()
     );
   `);
 
+  await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
+
   console.log('Database initialized.');
+}
+
+function randomTemperature(): number {
+  return Math.floor(Math.random() * 4294967296) - 2147483648;
+}
+
+export async function randomizeTemperature(userId: string) {
+  const temp = randomTemperature();
+  const res = await pool.query(
+    `UPDATE users SET temperature = $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [temp, userId]
+  );
+  return res.rows[0];
+}
+
+export async function regenSanityAll(): Promise<void> {
+  await pool.query(`
+    UPDATE users
+    SET sanity = LEAST(100, sanity + 1),
+        updated_at = NOW()
+    WHERE sanity < 100
+  `);
 }
 
 export async function getOrCreateUser(userId: string, guildId: string) {
@@ -72,7 +96,6 @@ export async function addStatus(userId: string, guildId: string, amount: number)
 export async function loseSanity(userId: string, guildId: string, amount: number) {
   await getOrCreateUser(userId, guildId);
 
-  // Clamp sanity to 0 minimum
   const res = await pool.query(
     `UPDATE users
      SET sanity = GREATEST(0, sanity - $1),
