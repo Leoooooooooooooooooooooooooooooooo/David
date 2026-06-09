@@ -1,70 +1,136 @@
-import { Client, Collection, Events, GatewayIntentBits, Interaction } from 'discord.js';
+import { Pool } from 'pg';
 import dotenv from 'dotenv';
-import { initDb, regenSanityAll } from './db/index.js';
-
-// Events
-import readyEvent from './events/ready.js';
-import messageCreateEvent from './events/messageCreate.js';
-import voiceStateUpdateEvent from './events/voiceStateUpdate.js';
-
-// Commands
-import * as statsCommand from './commands/stats.js';
-import * as leaderboardCommand from './commands/leaderboard.js';
-
 dotenv.config();
 
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildVoiceStates,
-    GatewayIntentBits.GuildMembers,
-    GatewayIntentBits.GuildMessageReactions,
-  ],
+export const pool = new Pool({
+  host: process.env.DB_HOST,
+  port: parseInt(process.env.DB_PORT || '5432'),
+  database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
 });
 
-// Register commands into a collection
-const commands = new Collection<string, { data: any; execute: Function }>();
-commands.set(statsCommand.data.name, statsCommand);
-commands.set(leaderboardCommand.data.name, leaderboardCommand);
+export async function initDb(): Promise<void> {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      user_id       TEXT PRIMARY KEY,
+      guild_id      TEXT NOT NULL,
+      xp            INTEGER NOT NULL DEFAULT 0,
+      level         INTEGER NOT NULL DEFAULT 1,
+      status        INTEGER NOT NULL DEFAULT 0,
+      sanity        INTEGER NOT NULL DEFAULT 100,
+      temperature   BIGINT NOT NULL DEFAULT 293,
+      deaths        INTEGER NOT NULL DEFAULT 0,
+      created_at    TIMESTAMP DEFAULT NOW(),
+      updated_at    TIMESTAMP DEFAULT NOW()
+    );
+  `);
 
-// Register events
-client.once(Events.ClientReady, (c) => readyEvent.execute(c));
-client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
-client.on(Events.VoiceStateUpdate, (oldState, newState) => voiceStateUpdateEvent.execute(oldState, newState));
+  await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
 
-// Handle slash commands
-client.on(Events.InteractionCreate, async (interaction: Interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  console.log('Database initialized.');
+}
 
-  const command = commands.get(interaction.commandName);
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
-    return;
-  }
+function randomTemperature(): number {
+  return Math.floor(Math.random() * 4294967296) - 2147483648;
+}
 
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(`Error executing ${interaction.commandName}:`, error);
-    const msg = { content: 'Something broke. Probably your fault.', ephemeral: true };
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp(msg);
-    } else {
-      await interaction.reply(msg);
-    }
-  }
-});
+export async function randomizeTemperature(userId: string) {
+  const temp = randomTemperature();
+  const res = await pool.query(
+    `UPDATE users SET temperature = $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [temp, userId]
+  );
+  return res.rows[0];
+}
 
-// Init DB then login
-initDb()
-  .then(() => {
-    // Regen 1 sanity per 5 minutes for all users
-    setInterval(() => regenSanityAll(), 5 * 60 * 1000);
-    return client.login(process.env.DISCORD_TOKEN);
-  })
-  .catch(err => {
-    console.error('Failed to start:', err);
-    process.exit(1);
-  });
+export async function regenSanityAll(): Promise<void> {
+  await pool.query(`
+    UPDATE users
+    SET sanity = LEAST(100, sanity + 1),
+        updated_at = NOW()
+    WHERE sanity < 100
+  `);
+}
+
+export async function getOrCreateUser(userId: string, guildId: string) {
+  const res = await pool.query(
+    `INSERT INTO users (user_id, guild_id)
+     VALUES ($1, $2)
+     ON CONFLICT (user_id) DO UPDATE SET updated_at = NOW()
+     RETURNING *`,
+    [userId, guildId]
+  );
+  return res.rows[0];
+}
+
+export async function addXp(userId: string, guildId: string, amount: number) {
+  await getOrCreateUser(userId, guildId);
+
+  const res = await pool.query(
+    `UPDATE users
+     SET xp = xp + $1,
+         level = FLOOR((xp + $1) / 100) + 1,
+         updated_at = NOW()
+     WHERE user_id = $2
+     RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function addStatus(userId: string, guildId: string, amount: number) {
+  await getOrCreateUser(userId, guildId);
+
+  const res = await pool.query(
+    `UPDATE users
+     SET status = status + $1,
+         updated_at = NOW()
+     WHERE user_id = $2
+     RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function loseSanity(userId: string, guildId: string, amount: number) {
+  await getOrCreateUser(userId, guildId);
+
+  const res = await pool.query(
+    `UPDATE users
+     SET sanity = GREATEST(0, sanity - $1),
+         updated_at = NOW()
+     WHERE user_id = $2
+     RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function killUser(userId: string) {
+  const res = await pool.query(
+    `UPDATE users
+     SET xp = 0,
+         level = 1,
+         status = 0,
+         sanity = 100,
+         deaths = deaths + 1,
+         updated_at = NOW()
+     WHERE user_id = $1
+     RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
+export async function getLeaderboard(guildId: string) {
+  const res = await pool.query(
+    `SELECT user_id, xp, level, status, sanity, deaths
+     FROM users
+     WHERE guild_id = $1
+     ORDER BY xp DESC
+     LIMIT 10`,
+    [guildId]
+  );
+  return res.rows;
+}
