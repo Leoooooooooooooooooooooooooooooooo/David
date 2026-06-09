@@ -25,7 +25,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     .setThumbnail(target.displayAvatarURL())
     .setColor(getSanityColor(user.sanity))
     .addFields(
-      { name: '⚡ XP', value: `${user.xp} XP`, inline: true },
+      { name: ':davidexp: XP', value: `${user.xp} XP`, inline: true },
       { name: '🎖️ Level', value: `${user.level}`, inline: true },
       { name: '📣 Status', value: `${user.status}`, inline: true },
       { name: '🧠 Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
