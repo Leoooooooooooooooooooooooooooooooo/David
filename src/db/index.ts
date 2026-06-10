@@ -38,6 +38,8 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid_at TIMESTAMP;`).catch(() => {});  
   await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS hunger INTEGER NOT NULL DEFAULT 100;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
 
   console.log('Database initialized.');
 }
