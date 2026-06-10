@@ -4,10 +4,12 @@ dotenv.config();
 
 import * as statsCommand from './commands/stats';
 import * as leaderboardCommand from './commands/leaderboard';
+import * as eatCommand from './commands/eat';
 
 const commands = [
   statsCommand.data.toJSON(),
   leaderboardCommand.data.toJSON(),
+  eatCommand.data.toJSON()
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
