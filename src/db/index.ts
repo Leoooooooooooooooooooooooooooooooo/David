@@ -180,7 +180,7 @@ export async function decreaseDrynessAll(): Promise<void> {
 
 export async function hungerGain(userId: string, amount : number) {
   const res = await pool.query(
-    `UPDATE users SET hunger = LEAST(100, hunger + amount), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    `UPDATE users SET hunger = LEAST(100, hunger + $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
     [amount, userId]
   );
   return res.rows[0];
