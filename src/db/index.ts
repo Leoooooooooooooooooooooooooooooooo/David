@@ -177,3 +177,19 @@ export async function decreaseDrynessAll(): Promise<void> {
     UPDATE users SET dryness = GREATEST(0, dryness - 1), updated_at = NOW() WHERE dryness > 0
   `);
 }
+
+export async function hungerGain(userId: string, amount : number) {
+  const res = await pool.query(
+    `UPDATE users SET hunger = LEAST(100, hunger + amount), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function hungerLoss(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET hunger = GREATEST(0, hunger - 20), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}

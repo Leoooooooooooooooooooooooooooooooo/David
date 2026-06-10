@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { getOrCreateUser } from '../db/index.js';
+import { getOrCreateUser, hungerLoss } from '../db/index.js';
 
 export const data = new SlashCommandBuilder()
   .setName('stats')
@@ -18,9 +18,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const user = await getOrCreateUser(target.id, guildId);
 
+  const test = await hungerLoss(target.id)
   const sanityBar = getBar(user.sanity);
   const hungerBar = getBar(user.hunger);
   const weightBar = getBar(user.weight);
+  
   const insuranceStatus = user.insurance_paid
     ? `✅ Paid on ${new Date(user.insurance_paid_at).toLocaleDateString('en-CA')}`
     : '❌ Unpaid lol';
