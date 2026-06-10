@@ -8,8 +8,12 @@ export const data = new SlashCommandBuilder()
 export async function execute(interaction: ChatInputCommandInteraction) {
   const userId = interaction.user.id;
   const guildId = interaction.guildId!;
-
-  const user = await hungerGain(userId,20)
-
+  
+  await getOrCreateUser(userId, guildId);
+  const updated = await hungerGain(userId,20);
+  
+  await interaction.reply(
+    `🍽️ **${interaction.user.displayName}** ate food. Hunger is now **${updated.hunger}%**. How scrumptious!.`
+  );
   
   }
