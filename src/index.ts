@@ -11,6 +11,7 @@ import * as statsCommand from './commands/stats';
 import * as leaderboardCommand from './commands/leaderboard';
 import * as moisturizeCommand from './commands/moisturize';
 import * as insuranceCommand from './commands/insurance';
+import * as eatCommand from './commands/eat';
 
 
 dotenv.config();
@@ -31,6 +32,7 @@ commands.set(statsCommand.data.name, statsCommand);
 commands.set(leaderboardCommand.data.name, leaderboardCommand);
 commands.set(moisturizeCommand.data.name, moisturizeCommand);
 commands.set(insuranceCommand.data.name, insuranceCommand);
+commands.set(eatCommand.data.name, eatCommand);
 
 client.once(Events.ClientReady, (c) => readyEvent.execute(c));
 client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
