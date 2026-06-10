@@ -7,13 +7,15 @@ import * as leaderboardCommand from './commands/leaderboard';
 import * as eatCommand from './commands/eat';
 import * as insuranceCommand from './commands/insurance';
 import * as moisturizeCommand from './commands/moisturize';
+import * as workCommand from './commands/work';
 
 const commands = [
   statsCommand.data.toJSON(),
   leaderboardCommand.data.toJSON(),
   eatCommand.data.toJSON(),
   insuranceCommand.data.toJSON(),
-  moisturizeCommand.data.toJSON()
+  moisturizeCommand.data.toJSON(),
+  workCommand.data.toJSON()
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);

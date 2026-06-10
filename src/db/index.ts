@@ -156,6 +156,22 @@ export async function moisturize(userId: string) {
   return res.rows[0];
 }
 
+export async function addMoney(userId: string, amount: number) {
+  const res = await pool.query(
+    `UPDATE users SET money = money + $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function setSick(userId: string, sick: boolean) {
+  const res = await pool.query(
+    `UPDATE users SET is_sick = $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [sick, userId]
+  );
+  return res.rows[0];
+}
+
 export async function spendMoney(userId: string, amount: number) {
   const res = await pool.query(
     `UPDATE users SET money = GREATEST(0, money - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,

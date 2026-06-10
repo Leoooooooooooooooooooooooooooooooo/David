@@ -1,20 +1,39 @@
-// import { SlashCommandBuilder, ChatInputCommandInteraction, User } from 'discord.js';
-// import { getOrCreateUser, addMoney, setSick } from '../db/index';
+import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
+import { getOrCreateUser, addMoney, setSick } from '../db/index';
 
-// export const data = new SlashCommandBuilder()
-//   .setName('work')
-// .setDescription('Get a J*b.')
+const cooldowns = new Map<string, number>();
+const COOLDOWN_MS = 30_000;
 
-// export async function execute(interaction: ChatInputCommandInteraction) {
-//   const userId = interaction.user.id;
-//   const guildId = interaction.guildId!;
-//   if (userId.is_sick) {
-//   await interaction.reply(`No J*b today you are sick :(`);
-//   if (userId.WORK_COOLDOWNS)
-//   return;
-// }
+export const data = new SlashCommandBuilder()
+  .setName('work')
+  .setDescription('Get a J*b.');
 
-//   await interaction.reply(
-//     `💧 **${interaction.user.displayName}** moisturized. Dryness is now **${updated.dryness}%**. Skin is merely concerning.`
-//   );
-// }
+export async function execute(interaction: ChatInputCommandInteraction) {
+  const userId = interaction.user.id;
+  const guildId = interaction.guildId!;
+
+  const user = await getOrCreateUser(userId, guildId);
+
+  if (user.is_sick) {
+    await interaction.reply({ content: `🤧 **${interaction.user.displayName}** is too sick to work lol`, ephemeral: true });
+    return;
+  }
+
+  const lastUsed = cooldowns.get(userId) ?? 0;
+  const remaining = COOLDOWN_MS - (Date.now() - lastUsed);
+  if (remaining > 0) {
+    await interaction.reply({ content: `⏳ You just worked. Wait **${Math.ceil(remaining / 1000)}s** before working again.`, ephemeral: true });
+    return;
+  }
+
+  cooldowns.set(userId, Date.now());
+
+  const earned = Math.floor(Math.random() * 11) + 5;
+  const gotSick = Math.random() < 0.5;
+
+  await addMoney(userId, earned);
+  if (gotSick) await setSick(userId, true);
+
+  const sickLine = gotSick ? `\n you have ebola` : '';
+  await interaction.reply(`💼 **${interaction.user.displayName}** worked and earned **$${earned}**.${sickLine}`);
+}
