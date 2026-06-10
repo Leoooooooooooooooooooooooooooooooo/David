@@ -8,6 +8,7 @@ import * as eatCommand from './commands/eat';
 import * as insuranceCommand from './commands/insurance';
 import * as moisturizeCommand from './commands/moisturize';
 import * as workCommand from './commands/work';
+import * as recoverCommand from './commands/recover';
 
 const commands = [
   statsCommand.data.toJSON(),
@@ -15,7 +16,8 @@ const commands = [
   eatCommand.data.toJSON(),
   insuranceCommand.data.toJSON(),
   moisturizeCommand.data.toJSON(),
-  workCommand.data.toJSON()
+  workCommand.data.toJSON(),
+  recoverCommand.data.toJSON()
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);

@@ -29,7 +29,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   cooldowns.set(userId, Date.now());
 
   const earned = Math.floor(Math.random() * 11) + 5;
-  const gotSick = Math.random() < 0.5;
+  const gotSick = Math.random() < 0.10; // 10% chance to get sick
 
   await addMoney(userId, earned);
   if (gotSick) await setSick(userId, true);

@@ -13,6 +13,7 @@ import * as moisturizeCommand from './commands/moisturize';
 import * as insuranceCommand from './commands/insurance';
 import * as eatCommand from './commands/eat';
 import * as workCommand from './commands/work';
+import * as recoverCommand from './commands/recover';
 
 
 dotenv.config();
@@ -35,6 +36,7 @@ commands.set(moisturizeCommand.data.name, moisturizeCommand);
 commands.set(insuranceCommand.data.name, insuranceCommand);
 commands.set(eatCommand.data.name, eatCommand);
 commands.set(workCommand.data.name, workCommand);
+commands.set(recoverCommand.data.name, recoverCommand);
 
 client.once(Events.ClientReady, (c) => readyEvent.execute(c));
 client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
