@@ -1,6 +1,6 @@
 import { Client, Collection, Events, GatewayIntentBits, Interaction } from 'discord.js';
 import dotenv from 'dotenv';
-import { initDb, regenSanityAll, decreaseDrynessAll } from './db/index';
+import { initDb, regenSanityAll, decreaseDrynessAll, expireInsuranceAll } from './db/index';
 
 
 import readyEvent from './events/ready';
@@ -68,6 +68,7 @@ initDb()
   .then(() => {
     setInterval(() => regenSanityAll(), 5 * 60 * 1000);
     setInterval(() => decreaseDrynessAll(), 10 * 60 * 1000);
+    setInterval(() => expireInsuranceAll(), 60 * 60 * 1000);
     return client.login(process.env.DISCORD_TOKEN);
   })
   .catch(err => {

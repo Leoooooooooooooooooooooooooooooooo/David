@@ -188,6 +188,15 @@ export async function payInsurance(userId: string) {
   return res.rows[0];
 }
 
+export async function expireInsuranceAll(): Promise<void> {
+  await pool.query(`
+    UPDATE users
+    SET insurance_paid = FALSE, insurance_paid_at = NULL, updated_at = NOW()
+    WHERE insurance_paid = TRUE
+      AND insurance_paid_at < NOW() - INTERVAL '5 days'
+  `);
+}
+
 export async function decreaseDrynessAll(): Promise<void> {
   await pool.query(`
     UPDATE users SET dryness = GREATEST(0, dryness - 1), updated_at = NOW() WHERE dryness > 0
