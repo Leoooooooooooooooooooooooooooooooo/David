@@ -41,6 +41,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '🌡️ Temperature', value: `${user.temperature}K`, inline: true },
       { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
       { name: '💵 Money', value: `$${user.money}`, inline: true },
+      { name: '💧 Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
       { name: '🤧 Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
       { name: '📋 Insurance', value: insuranceStatus, inline: true }
     )
