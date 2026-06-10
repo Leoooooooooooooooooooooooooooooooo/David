@@ -18,7 +18,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const user = await getOrCreateUser(target.id, guildId);
 
-  const sanityBar = getSanityBar(user.sanity);
+  const sanityBar = getBar(user.sanity);
+  const insuranceStatus = user.insurance_paid
+    ? `✅ Paid on ${new Date(user.insurance_paid_at).toLocaleDateString('en-CA')}`
+    : '❌ Unpaid lol';
 
   const embed = new EmbedBuilder()
     .setTitle(`📊 ${target.displayName}'s Stats`)
@@ -30,7 +33,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidstatus:1513942961191129292> Status', value: `${user.status}`, inline: true },
       { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
       { name: '🌡️ Temperature', value: `${user.temperature}K`, inline: true },
-      { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true }
+      { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
+      { name: '💵 Money', value: `$${user.money}`, inline: true },
+      { name: '🤧 Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
+      { name: '📋 Insurance', value: insuranceStatus, inline: true }
     )
     .setFooter({ text: getSanityMessage(user.sanity) })
     .setTimestamp();
@@ -38,8 +44,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await interaction.reply({ embeds: [embed] });
 }
 
-function getSanityBar(sanity: number): string {
-  const filled = Math.round(sanity / 10);
+function getBar(value: number): string {
+  const filled = Math.round(value / 10);
   const empty = 10 - filled;
   return '🟩'.repeat(filled) + '⬛'.repeat(empty);
 }

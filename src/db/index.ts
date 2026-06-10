@@ -22,10 +22,19 @@ export async function initDb(): Promise<void> {
       temperature   BIGINT NOT NULL DEFAULT 293,
       deaths        INTEGER NOT NULL DEFAULT 0,
       created_at    TIMESTAMP DEFAULT NOW(),
-      updated_at    TIMESTAMP DEFAULT NOW()
+      updated_at    TIMESTAMP DEFAULT NOW(),
+      money               INTEGER NOT NULL DEFAULT 0,
+      dryness             INTEGER NOT NULL DEFAULT 50,
+      is_sick             BOOLEAN NOT NULL DEFAULT FALSE,
+      insurance_paid      BOOLEAN NOT NULL DEFAULT FALSE,
+      insurance_paid_at   TIMESTAMP
     );
   `);
-
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS money INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS dryness INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_sick BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid_at TIMESTAMP;`).catch(() => {});  
   await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
 
   console.log('Database initialized.');
@@ -133,4 +142,34 @@ export async function getLeaderboard(guildId: string) {
     [guildId]
   );
   return res.rows;
+}
+
+export async function moisturize(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET dryness = LEAST(100, dryness + 20), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
+export async function spendMoney(userId: string, amount: number) {
+  const res = await pool.query(
+    `UPDATE users SET money = GREATEST(0, money - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function payInsurance(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET insurance_paid = TRUE, insurance_paid_at = NOW(), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
+export async function decreaseDrynessAll(): Promise<void> {
+  await pool.query(`
+    UPDATE users SET dryness = GREATEST(0, dryness - 1), updated_at = NOW() WHERE dryness > 0
+  `);
 }

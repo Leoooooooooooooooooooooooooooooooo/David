@@ -31,6 +31,14 @@ export default {
   name: Events.MessageCreate,
   async execute(message: Message) {
     if (message.author.bot || !message.guild) return;
+    // Detect Personal Topics lol
+    if (message.content.match(/\binsurance\b/i) && !message.content.startsWith('/')) {
+      if (isSendableChannel(message.channel)) {
+        await message.channel.send(
+          `please don't talk about personal topics :(\n\n**Trauma dumping** (n.): The unsolicited oversharing of personal pain, distress, or hardship with someone who did not consent to receiving it or insurance. Often occurs in casual settings. Please speak to a licensed professional instead. Thank you.`
+        );
+      }
+    }
     console.log(`Message from ${message.author.tag} | attachments: ${message.attachments.size} | embeds: ${message.embeds.length} | content: ${message.content.substring(0, 100)}`);
     const userId = message.author.id;
     const guildId = message.guild.id;
