@@ -12,6 +12,8 @@ const STATUS_PER_PING = 3;
 
 const xpCooldowns = new Map<string, number>();
 const XP_COOLDOWN_MS = 10_000;
+const WORK_COOLDOWNS = new Map<string, number>();
+const WORK_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
 
 function isGif(message: Message): boolean {
   if (message.content.match(/\.gif(\?|$)/i)) return true;
