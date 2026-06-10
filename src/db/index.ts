@@ -150,7 +150,7 @@ export async function getLeaderboard(guildId: string) {
 
 export async function moisturize(userId: string) {
   const res = await pool.query(
-    `UPDATE users SET dryness = LEAST(100, dryness + 20), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    `UPDATE users SET dryness = GREATEST(0, dryness - 20), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
     [userId]
   );
   return res.rows[0];
