@@ -27,7 +27,9 @@ export async function initDb(): Promise<void> {
       dryness             INTEGER NOT NULL DEFAULT 50,
       is_sick             BOOLEAN NOT NULL DEFAULT FALSE,
       insurance_paid      BOOLEAN NOT NULL DEFAULT FALSE,
-      insurance_paid_at   TIMESTAMP
+      insurance_paid_at   TIMESTAMP,
+      hunger              INTEGER NOT NULL DEFAULT 100,
+      weight              INTEGER NOT NULL DEFAULT 50
     );
   `);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS money INTEGER NOT NULL DEFAULT 0;`).catch(() => {});

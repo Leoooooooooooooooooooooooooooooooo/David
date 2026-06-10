@@ -19,6 +19,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const user = await getOrCreateUser(target.id, guildId);
 
   const sanityBar = getBar(user.sanity);
+  const hungerBar = getBar(user.hunger);
+  const weightBar = getBar(user.weight);
   const insuranceStatus = user.insurance_paid
     ? `✅ Paid on ${new Date(user.insurance_paid_at).toLocaleDateString('en-CA')}`
     : '❌ Unpaid lol';
@@ -32,6 +34,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidlevel:1513942942241390744> Level', value: `${user.level}`, inline: true },
       { name: '<:davidstatus:1513942961191129292> Status', value: `${user.status}`, inline: true },
       { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
+      { name: '🍽️ Hunger', value: `${hungerBar} ${user.hunger}/100`, inline: false },
+      { name: '⚖️ Weight', value: `${weightBar} ${user.weight}/100`, inline: false },
       { name: '🌡️ Temperature', value: `${user.temperature}K`, inline: true },
       { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
       { name: '💵 Money', value: `$${user.money}`, inline: true },
