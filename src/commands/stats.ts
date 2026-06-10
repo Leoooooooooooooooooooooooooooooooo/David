@@ -3,7 +3,7 @@ import {
   ChatInputCommandInteraction,
   EmbedBuilder,
 } from 'discord.js';
-import { getOrCreateUser, hungerLoss } from '../db/index.js';
+import { getOrCreateUser, hungerLoss } from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('stats')
