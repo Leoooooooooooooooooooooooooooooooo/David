@@ -53,8 +53,8 @@ export default {
     if (now - lastMessage > XP_COOLDOWN_MS) {
       xpCooldowns.set(userId, now);
       const updated = await addXp(userId, guildId, XP_PER_MESSAGE);
-      const hungerUpdated = await hungerLoss(userId, HUNGER_PER_MESSAGE);
-      const weightUpdated = await weightLoss(userId, WEIGHT_PER_MESSAGE);
+      await hungerLoss(userId, HUNGER_PER_MESSAGE);
+      await weightLoss(userId, WEIGHT_PER_MESSAGE);
 
       const oldLevel = Math.floor((updated.xp - XP_PER_MESSAGE) / 100) + 1;
       const newLevel = updated.level;
