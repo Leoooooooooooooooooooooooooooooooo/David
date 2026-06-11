@@ -37,7 +37,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
       { name: '🍽️ Stomach', value: `${hungerBar} ${user.hunger}/100`, inline: false },
       { name: '⚖️ Weight', value: `${weightBar} ${user.weight}/100`, inline: false },
-      { name: user.temperature < 0 ? '❄️ Temperature' : '🔥 Temperature', value: `${user.temperature}K`, inline: true },
+      { name: user.temperature < 0 ? '<:davidtempcold:1513943014798524606> Temperature' : '<:davidtemphot:1513942996641644846> Temperature', value: `${user.temperature}K`, inline: true },
       { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
       { name: '💵 Money', value: `$${user.money}`, inline: true },
       { name: '🌵 Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
