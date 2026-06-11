@@ -1,11 +1,13 @@
 import { Events, VoiceState } from 'discord.js';
-import { addXp, hungerLoss } from '../db/index';
+import { addXp, hungerLoss, weightLoss } from '../db/index';
 
 // Track when users joined VC: user_id -> join timestamp
 const vcJoinTimes = new Map<string, number>();
+const vcMinuteTracker = 0;
 
 const XP_PER_MINUTE_IN_VC = 2;
 const HUNGER_LOSS_PER_5_MINUTE_IN_VC = 1;
+const WEIGHT_LOSS_PER_10_MINUTE_IN_VC = 1;
 const VC_TICK_INTERVAL_MS = 60_000; // Award XP every 60 seconds
 
 // Interval ticker for VC XP
@@ -18,6 +20,14 @@ setInterval(async () => {
       await addXp(userId, guildId, XP_PER_MINUTE_IN_VC);
       // Reset their join time so we don't double-award
       vcJoinTimes.set(key, now);
+      vcMinuteTracker += 1;
+      if (vcMinuteTracker === 5){
+        await hungerLoss(userId, HUNGER_LOSS_PER_5_MINUTE_IN_VC);
+      }else if (vcMinuteTracker >= 10){
+        await hungerLoss(userId, HUNGER_LOSS_PER_5_MINUTE_IN_VC);
+        await weightLoss(userId, WEIGHT_LOSS_PER_10_MINUTE_IN_VC);
+        vcMinuteTracker = 0; // reset tracker after 10 minutes
+      }
     }
   }
 }, VC_TICK_INTERVAL_MS);

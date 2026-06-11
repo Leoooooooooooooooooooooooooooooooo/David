@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, addMoney, setSick } from '../db/index';
+import { getOrCreateUser, addMoney, setSick, hungerLoss } from '../db/index';
 
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 30_000;

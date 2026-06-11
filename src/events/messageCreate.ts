@@ -4,13 +4,14 @@ function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
   return channel && typeof channel.send === 'function';
 }
 
-import { addXp, addStatus, loseSanity, killUser, randomizeTemperature, hungerLoss } from '../db/index';
+import { addXp, addStatus, loseSanity, killUser, randomizeTemperature, hungerLoss, weightLoss } from '../db/index';
 
 const XP_PER_MESSAGE = 5;
 const SANITY_LOSS_PER_GIF = 10;
 const STATUS_PER_PING = 3;
 
 const HUNGER_PER_MESSAGE = 2;
+const WEIGHT_PER_MESSAGE = 1;
 
 const xpCooldowns = new Map<string, number>();
 const XP_COOLDOWN_MS = 10_000;
@@ -52,6 +53,9 @@ export default {
     if (now - lastMessage > XP_COOLDOWN_MS) {
       xpCooldowns.set(userId, now);
       const updated = await addXp(userId, guildId, XP_PER_MESSAGE);
+      const hungerUpdated = await hungerLoss(userId, HUNGER_PER_MESSAGE);
+      const weightUpdated = await weightLoss(userId, WEIGHT_PER_MESSAGE);
+
       const oldLevel = Math.floor((updated.xp - XP_PER_MESSAGE) / 100) + 1;
       const newLevel = updated.level;
 

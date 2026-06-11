@@ -13,7 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   // Base cost $50, +$25 per death
   const cost = 50 + (user.deaths * 25);
-
+  
   if (user.money < cost) {
     await interaction.reply(
       `📋 Your insurance premium is **$${cost}** but you only have **$${user.money}**. Get a J*b Fatty`

@@ -128,6 +128,13 @@ export async function killUser(userId: string) {
          status = 0,
          sanity = 100,
          deaths = deaths + 1,
+         hunger = 100,
+         weight = 50,
+         dryness = 50,
+         money = 0,
+         is_sick = FALSE,
+         insurance_paid = FALSE,
+         insurance_paid_at = NULL,
          updated_at = NOW()
      WHERE user_id = $1
      RETURNING *`,
@@ -199,7 +206,7 @@ export async function expireInsuranceAll(): Promise<void> {
 
 export async function decreaseDrynessAll(): Promise<void> {
   await pool.query(`
-    UPDATE users SET dryness = GREATEST(0, dryness - 1), updated_at = NOW() WHERE dryness > 0
+    UPDATE users SET dryness = GREATEST(0, dryness + 1), updated_at = NOW() WHERE dryness > 0
   `);
 }
 
@@ -211,10 +218,30 @@ export async function hungerGain(userId: string, amount : number) {
   return res.rows[0];
 }
 
-export async function hungerLoss(userId: string) {
+export async function hungerLoss(userId: string, amount : number) {
   const res = await pool.query(
-    `UPDATE users SET hunger = GREATEST(0, hunger - 20), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
-    [userId]
+    `UPDATE users SET hunger = GREATEST(0, hunger - $1), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+  if (res.rows[0].hunger === 0) {
+    await killUser(userId);
+  }
+}
+
+export async function weightLoss(userId: string, amount : number) {
+  const res = await pool.query(
+    `UPDATE users SET hunger = GREATEST(0, weight - $1), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+
+export async function weightGain(userId: string, amount : number) {
+  const res = await pool.query(
+    `UPDATE users SET weight = LEAST(100, weight + $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [amount, userId]
   );
   return res.rows[0];
 }

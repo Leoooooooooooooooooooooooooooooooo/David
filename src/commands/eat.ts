@@ -1,24 +1,34 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, hungerGain, loseSanity} from '../db/index';
+import { getOrCreateUser, hungerGain, loseSanity, weightGain} from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('eat')
-  .setDescription('Eat food that may or may not maybe kill you or something');
+  .setDescription('Eat food that may or may not maybe kill you or something')
+  .addUserOption(option =>
+    option.setName('user').setDescription('The user to feed').setRequired(false)
+  );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const userId = interaction.user.id;
   const guildId = interaction.guildId!;
   
-  await getOrCreateUser(userId, guildId);
+  const user = await getOrCreateUser(userId, guildId);
 
-  const gain = Math.floor(Math.random() * 100);
+  const gain = Math.floor(Math.random() * 99)+1;
   const alergic = Math.random() <= 0.05;
+  const gainovermax = (user.hunger + gain) - 100;
+
+  if (gainovermax > 0) {
+    const weightGain = Math.floor((gain - gainovermax) / 2) + gainovermax;
+  } else {
+    const weightGain = Math.floor(gain / 2);
+  }
 
   if (alergic == false) {
     const updated = await hungerGain(userId,gain);
-    
+    await weightGain(userId,weightGain);
   }else {
-    const updated = await loseSanity(userId,guildId,20)
+    const updated = await loseSanity(userId,guildId,20);
   }
   
   if (alergic == false) await interaction.reply(
