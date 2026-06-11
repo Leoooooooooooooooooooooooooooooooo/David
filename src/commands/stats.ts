@@ -16,8 +16,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const target = interaction.options.getUser('user') ?? interaction.user;
   const guildId = interaction.guildId!;
 
-  if (target == null) target = interaction.user;
-
   const user = await getOrCreateUser(target.id, guildId);
 
   const sanityBar = getBar(user.sanity);

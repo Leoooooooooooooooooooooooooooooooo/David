@@ -3,7 +3,7 @@ import { addXp, hungerLoss, weightLoss } from '../db/index';
 
 // Track when users joined VC: user_id -> join timestamp
 const vcJoinTimes = new Map<string, number>();
-const vcMinuteTracker = 0;
+let vcMinuteTracker = 0;
 
 const XP_PER_MINUTE_IN_VC = 2;
 const HUNGER_LOSS_PER_5_MINUTE_IN_VC = 1;
