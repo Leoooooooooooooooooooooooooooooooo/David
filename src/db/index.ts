@@ -224,9 +224,6 @@ export async function hungerLoss(userId: string, amount : number) {
     [amount, userId]
   );
   return res.rows[0];
-  if (res.rows[0].hunger <= 0) {
-    await killUser(userId);
-  }
 }
 
 export async function weightLoss(userId: string, amount : number) {
