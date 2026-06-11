@@ -19,8 +19,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const gainovermax = (user.hunger + gain) - 100;
 
   const weightGainAmount = gainovermax > 0
-    ? Math.floor((gain - gainovermax) / 2) + gainovermax
-    : Math.floor(gain / 2);
+    ? Math.floor((gain - gainovermax) / 3) + gainovermax
+    : Math.floor(gain / 3);
 
   if (alergic == false) {
     const updated = await hungerGain(userId,gain);
