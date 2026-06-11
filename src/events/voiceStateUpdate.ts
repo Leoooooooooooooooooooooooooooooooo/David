@@ -1,10 +1,11 @@
 import { Events, VoiceState } from 'discord.js';
-import { addXp } from '../db/index';
+import { addXp, hungerLoss } from '../db/index';
 
 // Track when users joined VC: user_id -> join timestamp
 const vcJoinTimes = new Map<string, number>();
 
 const XP_PER_MINUTE_IN_VC = 2;
+const HUNGER_LOSS_PER_5_MINUTE_IN_VC = 1;
 const VC_TICK_INTERVAL_MS = 60_000; // Award XP every 60 seconds
 
 // Interval ticker for VC XP

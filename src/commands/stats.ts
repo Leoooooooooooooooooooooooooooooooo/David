@@ -16,9 +16,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const target = interaction.options.getUser('user') ?? interaction.user;
   const guildId = interaction.guildId!;
 
+  if (target == null) target = interaction.user;
+
   const user = await getOrCreateUser(target.id, guildId);
 
-  const test = await hungerLoss(target.id)
   const sanityBar = getBar(user.sanity);
   const hungerBar = getBar(user.hunger);
   const weightBar = getBar(user.weight);
@@ -36,12 +37,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidlevel:1513942942241390744> Level', value: `${user.level}`, inline: true },
       { name: '<:davidstatus:1513942961191129292> Status', value: `${user.status}`, inline: true },
       { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
-      { name: '🍽️ Hunger', value: `${hungerBar} ${user.hunger}/100`, inline: false },
+      { name: '🍽️ Stomach', value: `${hungerBar} ${user.hunger}/100`, inline: false },
       { name: '⚖️ Weight', value: `${weightBar} ${user.weight}/100`, inline: false },
       { name: user.temperature < 0 ? '❄️ Temperature' : '🔥 Temperature', value: `${user.temperature}K`, inline: true },
       { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
       { name: '💵 Money', value: `$${user.money}`, inline: true },
-      { name: '💧 Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
+      { name: '🌵 Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
       { name: '🤧 Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
       { name: '📋 Insurance', value: insuranceStatus, inline: true }
     )

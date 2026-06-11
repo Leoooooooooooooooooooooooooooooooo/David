@@ -4,11 +4,13 @@ function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
   return channel && typeof channel.send === 'function';
 }
 
-import { addXp, addStatus, loseSanity, killUser, randomizeTemperature } from '../db/index';
+import { addXp, addStatus, loseSanity, killUser, randomizeTemperature, hungerLoss } from '../db/index';
 
 const XP_PER_MESSAGE = 5;
 const SANITY_LOSS_PER_GIF = 10;
 const STATUS_PER_PING = 3;
+
+const HUNGER_PER_MESSAGE = 2;
 
 const xpCooldowns = new Map<string, number>();
 const XP_COOLDOWN_MS = 10_000;

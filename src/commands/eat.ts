@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, hungerGain} from '../db/index';
+import { getOrCreateUser, hungerGain, loseSanity} from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('eat')
@@ -10,10 +10,23 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const guildId = interaction.guildId!;
   
   await getOrCreateUser(userId, guildId);
-  const updated = await hungerGain(userId,20);
+
+  const gain = Math.floor(Math.random() * 100);
+  const alergic = Math.random() <= 0.05;
+
+  if (alergic == false) {
+    const updated = await hungerGain(userId,gain);
+    
+  }else {
+    const updated = await loseSanity(userId,guildId,20)
+  }
   
-  await interaction.reply(
-    `🍽️ **${interaction.user.displayName}** ate food. Hunger is now **${updated.hunger}%**. How scrumptious!.`
+  if (alergic == false) await interaction.reply(
+    `🍽️ **${interaction.user.displayName}** ate food. Stomach is now **${updated.hunger}%** full! How scrumptious!!`
+  );
+
+  if (alergic == true) await interaction.reply(
+    `err... yipes!!! Looks like you ate something you're alergic to... **-20 sanity**...`
   );
   
   }
