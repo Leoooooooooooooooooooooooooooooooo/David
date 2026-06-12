@@ -18,7 +18,8 @@ user.money
 
 const earned = Math.floor(Math.random() * ((user.money * 2) + 1)); //between 0 and double all of their money
 
-addMoney(userId, -user.money); 
-addMoney(userId, earned);
- 
+await addMoney(userId, -user.money); 
+await addMoney(userId, earned);
+await interaction.reply(`🎰 **${interaction.user.displayName}** gambled and got **$${earned}**`);
+
 }

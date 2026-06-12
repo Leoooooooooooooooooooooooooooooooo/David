@@ -10,6 +10,8 @@ import * as moisturizeCommand from './commands/moisturize';
 import * as workCommand from './commands/work';
 import * as recoverCommand from './commands/recover';
 import * as guessCommand from './commands/guess';
+import * as gambleCommand from './commands/gamble';
+
 
 const commands = [
   statsCommand.data.toJSON(),
@@ -20,6 +22,7 @@ const commands = [
   workCommand.data.toJSON(),
   recoverCommand.data.toJSON(),
   guessCommand.data.toJSON(),
+  gambleCommand.data.toJSON(),
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);
