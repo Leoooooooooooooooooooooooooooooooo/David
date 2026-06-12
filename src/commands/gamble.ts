@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, addMoney, setSick, hungerLoss } from '../db/index';
+import { getOrCreateUser, addMoney} from '../db/index';
 
 
 
