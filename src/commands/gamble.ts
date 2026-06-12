@@ -12,7 +12,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const guildId = interaction.guildId!;
 
   const user = await getOrCreateUser(userId, guildId);
-
+user.money
 
 
 
