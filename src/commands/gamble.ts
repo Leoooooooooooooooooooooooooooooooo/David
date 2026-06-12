@@ -40,7 +40,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (isJackpot) {
     await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! your so rich! with a total of **$${earned}**`);
   } else {
-    await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**, and **$${user.sanity}** sanity`);
+    await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**, and **${user.sanity-5}** sanity`);
   }
 
 }
