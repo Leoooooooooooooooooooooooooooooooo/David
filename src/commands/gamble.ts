@@ -5,11 +5,12 @@ import { getOrCreateUser, addMoney} from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('gamble')
-  .setDescription('Gabmle your lifes savings away');
+  .setDescription('Gamble your lifes savings away');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  const userId = interaction.user.id;
-  const guildId = interaction.guildId!;
+  try {
+    const userId = interaction.user.id;
+    const guildId = interaction.guildId!;
 
   const user = await getOrCreateUser(userId, guildId);
 user.money
