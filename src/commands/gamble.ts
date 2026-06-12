@@ -12,14 +12,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const guildId = interaction.guildId!;
 
   const user = await getOrCreateUser(userId, guildId);
-user.money
+
 
 
 
 const earned = Math.floor(Math.random() * ((user.money * 2) + 1)); //between 0 and double all of their money
+const netChange = earned - user.money;
 
-await addMoney(userId, -user.money); 
-await addMoney(userId, earned);
+await addMoney(userId, netChange); 
+
 await interaction.reply(`🎰 **${interaction.user.displayName}** gambled and got **$${earned}**`);
 
 }
