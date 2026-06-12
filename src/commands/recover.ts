@@ -16,11 +16,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     return;
   }
 
-  if (user.sanity < 50) {
-    await interaction.reply({ content: `🧠 You need at least **50 sanity** to recover but you only have **${user.sanity}**. Suffer.`, ephemeral: true });
-    return;
-  }
-
   const updated = await loseSanity(userId, guildId, 50);
 
   if (updated.died) {
