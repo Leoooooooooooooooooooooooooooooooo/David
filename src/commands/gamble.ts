@@ -13,25 +13,34 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const user = await getOrCreateUser(userId, guildId);
 
+  if (user.money <= 0) {
+    await interaction.reply(`🎰 **${interaction.user.displayName}** is broke. Nothing to gamble.`);
+    return;
+  }
 
-await loseSanity(userId,guildId,5); 
-const currentMoney = user.money;
-const jackpotRoll = Math.floor(Math.random() * 1000) + 1;
-let earned =0;
-let isJackpot = false;
-if (jackpotRoll === 1) {
-    earned = user.money +1000;
+  const sanityResult = await loseSanity(userId, guildId, 5);
+  if (sanityResult.died) {
+    await interaction.reply(`<:daviddeath:1513943034738245794> **${interaction.user.displayName}** lost their mind gambling and DIED. All their money is GONE.`);
+    return;
+  }
+
+  const currentMoney = user.money;
+  const jackpotRoll = Math.floor(Math.random() * 1000) + 1;
+  let earned = 0;
+  let isJackpot = false;
+  if (jackpotRoll === 1) {
+    earned = user.money + 1000;
     isJackpot = true;
-} else {
-earned = Math.floor(Math.random() * ((user.money * 2.5) + 1)); //between 0 and 2.5 all of their money
-}
-const netChange = earned - user.money;
+  } else {
+    earned = Math.floor(Math.random() * ((user.money * 2.5) + 1));
+  }
+  const netChange = earned - user.money;
 
-await addMoney(userId, netChange); 
-if (isJackpot) {
-await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! your so rich! with a total of **$${earned}**`);
-} else {
-await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**`);
-}
+  await addMoney(userId, netChange);
+  if (isJackpot) {
+    await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! your so rich! with a total of **$${earned}**`);
+  } else {
+    await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**`);
+  }
 
 }

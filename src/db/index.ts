@@ -213,7 +213,7 @@ export async function expireInsuranceAll(): Promise<void> {
 
 export async function decreaseDrynessAll(): Promise<void> {
   await pool.query(`
-    UPDATE users SET dryness = LEAST(0, dryness + 1), updated_at = NOW() WHERE dryness > 0
+    UPDATE users SET dryness = LEAST(100, dryness + 1), updated_at = NOW() WHERE dryness < 100
   `);
 }
 
