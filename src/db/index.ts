@@ -228,7 +228,7 @@ export async function hungerLoss(userId: string, amount : number) {
 
 export async function weightLoss(userId: string, amount : number) {
   const res = await pool.query(
-    `UPDATE users SET hunger = GREATEST(0, weight - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    `UPDATE users SET weight = GREATEST(0, weight - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
     [amount, userId]
   );
   return res.rows[0];
