@@ -13,6 +13,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const updated = await moisturize(userId);
 
   await interaction.reply(
-    `💧 **${interaction.user.displayName}** moisturized. Dryness is now **${updated.dryness}%**.`
+    `<:davidmoisturize:1514871879381291038> **${interaction.user.displayName}** moisturized. Dryness is now **${updated.dryness}%**.`
   );
 }

@@ -35,14 +35,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidlevel:1513942942241390744> Level', value: `${user.level}`, inline: true },
       { name: '<:davidstatus:1513942961191129292> Status', value: `${user.status}`, inline: true },
       { name: '<:davidsanity:1513942977586659420> Sanity', value: `${sanityBar} ${user.sanity}/100`, inline: false },
-      { name: '🍽️ Stomach', value: `${hungerBar} ${user.hunger}/100`, inline: false },
-      { name: '⚖️ Weight', value: `${weightBar} ${user.weight}/100`, inline: false },
+      { name: '<:davidstomach:1514871898998177792> Stomach', value: `${hungerBar} ${user.hunger}/100`, inline: false },
+      { name: user.weight < 50 ? '<:davidunderweight:1514871915154509906> Weight' : '<:davidfat:1514871933584412783> Weight', value: `${weightBar} ${user.weight}/100`, inline: false },
       { name: user.temperature < 0 ? '<:davidtempcold:1513943014798524606> Temperature' : '<:davidtemphot:1513942996641644846> Temperature', value: `${user.temperature}K`, inline: true },
       { name: '<:daviddeath:1513943034738245794> Deaths', value: `${user.deaths}`, inline: true },
-      { name: '💵 Money', value: `$${user.money}`, inline: true },
-      { name: '🌵 Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
-      { name: '🤧 Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
-      { name: '📋 Insurance', value: insuranceStatus, inline: true }
+      { name: '<:davidmoney:1514872079491530852> Money', value: `$${user.money}`, inline: true },
+      { name: '<:daviddryness:1514872059921043566> Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
+      { name: '<:davidsick:1514872041822617630> Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
+      { name: '<:davidinsurance:1514872007198638111> Insurance', value: insuranceStatus, inline: true }
     )
     .setFooter({ text: getSanityMessage(user.sanity) })
     .setTimestamp();
@@ -53,7 +53,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 function getBar(value: number): string {
   const filled = Math.round(value / 10);
   const empty = 10 - filled;
-  return '🟩'.repeat(filled) + '⬛'.repeat(empty);
+  return '<:davidgreenbar:1514871989884682342>'.repeat(filled) + '<:davidgraybar:1514871971979202672>'.repeat(empty);
 }
 
 function getSanityColor(sanity: number): number {

@@ -24,5 +24,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   await setSick(userId, false);
-  await interaction.reply(`💊 **${interaction.user.displayName}** spent 50 sanity and recovered... the noises...`);
+  await interaction.reply(`<:davidrecover:1514872024596611122> **${interaction.user.displayName}** spent 50 sanity and recovered... the noises...`);
 }

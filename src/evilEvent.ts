@@ -104,7 +104,7 @@ async function startEvilEvent(): Promise<void> {
   const mentions = users.map((u: { user_id: string }) => `<@${u.user_id}>`).join(' ');
 
   await channel.send(
-    `**Hey guys im actually evil now btw**\n\n` +
+    `<:davidanger:1514871838360993804> **Hey guys im actually evil now btw**\n\n` +
     (mentions ? `${mentions}\n\n` : '') +
     `I have chosen an evil **5-letter password**. Guess it or im gonna kill you all.\n` +
     `Use \`/guess <word>\` — it works like Wordle:\n` +

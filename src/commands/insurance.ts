@@ -28,7 +28,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const expiresAt = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toLocaleDateString('en-CA');
 
   await interaction.reply(
-    `📋 **${interaction.user.displayName}** paid their insurance premium of **$${cost}**.\n` +
+    `<:davidinsurance:1514872007198638111> **${interaction.user.displayName}** paid their insurance premium of **$${cost}**.\n` +
     `✅ Insurance is paid bro | Paid: **${paidAt}** | Expires: **${expiresAt}** | Deaths on record: **${user.deaths}**`
   );
 }

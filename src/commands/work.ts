@@ -35,5 +35,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (gotSick) await setSick(userId, true);
 
   const sickLine = gotSick ? `\n You just got Ebola lol` : '';
-  await interaction.reply(`💼 **${interaction.user.displayName}** worked and earned **$${earned}**.${sickLine}`);
+  await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** worked and earned **$${earned}**.${sickLine}`);
 }

@@ -26,7 +26,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const updated = await hungerGain(userId,gain);
     await weightGain(userId, weightGainAmount);
     await interaction.reply(
-      `🍽️ **${interaction.user.displayName}** ate food. Stomach is now **${updated.hunger}%** full! How scrumptious!!`
+      `<:davidstomach:1514871898998177792> **${interaction.user.displayName}** ate food. Stomach is now **${updated.hunger}%** full! How scrumptious!!`
     );
   } else {
     const updated = await loseSanity(userId,guildId,20);
