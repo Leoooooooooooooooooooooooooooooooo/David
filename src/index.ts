@@ -16,6 +16,7 @@ import * as eatCommand from './commands/eat';
 import * as workCommand from './commands/work';
 import * as recoverCommand from './commands/recover';
 import * as guessCommand from './commands/guess';
+import * as gambleCommand from './commands/gamble';
 
 
 dotenv.config();
@@ -40,6 +41,7 @@ commands.set(eatCommand.data.name, eatCommand);
 commands.set(workCommand.data.name, workCommand);
 commands.set(recoverCommand.data.name, recoverCommand);
 commands.set(guessCommand.data.name, guessCommand);
+commands.set(gambleCommand.data.name, gambleCommand);
 
 client.once(Events.ClientReady, (c) => {
   readyEvent.execute(c);
