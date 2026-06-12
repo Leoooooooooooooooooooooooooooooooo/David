@@ -8,7 +8,6 @@ export const data = new SlashCommandBuilder()
   .setDescription('Gamble your lifes savings away');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  try {
     const userId = interaction.user.id;
     const guildId = interaction.guildId!;
 
