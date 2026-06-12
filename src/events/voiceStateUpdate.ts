@@ -6,8 +6,8 @@ const vcJoinTimes = new Map<string, number>();
 const vcMinuteTracker = new Map<string, number>();
 
 const XP_PER_MINUTE_IN_VC = 2;
-const HUNGER_LOSS_PER_5_MINUTE_IN_VC = 1;
-const WEIGHT_LOSS_PER_10_MINUTE_IN_VC = 1;
+const HUNGER_LOSS_PER_5_MINUTE_IN_VC = 2;
+const WEIGHT_LOSS_PER_10_MINUTE_IN_VC = 2;
 const VC_TICK_INTERVAL_MS = 60_000; // Award XP every 60 seconds
 
 // Interval ticker for VC XP
