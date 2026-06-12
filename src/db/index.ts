@@ -117,7 +117,14 @@ export async function loseSanity(userId: string, guildId: string, amount: number
      RETURNING *`,
     [amount, userId]
   );
-  return res.rows[0];
+  const user = res.rows[0];
+
+  if (user.sanity <= 0) {
+    const killed = await killUser(userId);
+    return { ...killed, died: true };
+  }
+
+  return { ...user, died: false };
 }
 
 export async function killUser(userId: string) {

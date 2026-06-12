@@ -74,7 +74,7 @@ client.on(Events.InteractionCreate, async (interaction: Interaction) => {
 
 initDb()
   .then(() => {
-    setInterval(() => regenSanityAll(), 5 * 60 * 1000);
+    setInterval(() => regenSanityAll(), 60 * 1000);
     setInterval(() => decreaseDrynessAll(), 10 * 60 * 1000);
     setInterval(() => expireInsuranceAll(), 60 * 60 * 1000);
     return client.login(process.env.DISCORD_TOKEN);

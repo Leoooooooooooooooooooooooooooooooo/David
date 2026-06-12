@@ -29,10 +29,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       `🍽️ **${interaction.user.displayName}** ate food. Stomach is now **${updated.hunger}%** full! How scrumptious!!`
     );
   } else {
-    await loseSanity(userId,guildId,20);
-    await interaction.reply(
-      `err... yipes!!! Looks like you ate something you're alergic to... **-20 sanity**...`
-    );
+    const updated = await loseSanity(userId,guildId,20);
+    if (updated.died) {
+      await interaction.reply(`<:daviddeath:1513943034738245794> **${interaction.user.displayName}** had such a bad allergic reaction they died lol.`);
+    } else {
+      await interaction.reply(
+        `err... yipes!!! Looks like you ate something you're alergic to... **-20 sanity**...`
+      );
+    }
   }
   
   }

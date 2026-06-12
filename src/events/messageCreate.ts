@@ -4,7 +4,7 @@ function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
   return channel && typeof channel.send === 'function';
 }
 
-import { addXp, addStatus, loseSanity, killUser, randomizeTemperature, hungerLoss, weightLoss } from '../db/index';
+import { addXp, addStatus, loseSanity, randomizeTemperature, hungerLoss, weightLoss } from '../db/index';
 import { triggerEvilEventNow } from '../evilEvent';
 
 const XP_PER_MESSAGE = 5;
@@ -93,8 +93,7 @@ export default {
       const updated = await loseSanity(userId, guildId, SANITY_LOSS_PER_GIF);
       await message.react('<:davidsanity:1513942977586659420>');
 
-      if (updated.sanity <= 0) {
-        await killUser(userId);
+      if (updated.died) {
         const deathMessages = [
           `<:daviddeath:1513943034738245794> **${message.author.displayName}** died lol`,
           `<:daviddeath:1513943034738245794> **${message.author.displayName}** was driven crazy by the sounds`,
