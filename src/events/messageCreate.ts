@@ -5,6 +5,7 @@ function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
 }
 
 import { addXp, addStatus, loseSanity, killUser, randomizeTemperature, hungerLoss, weightLoss } from '../db/index';
+import { triggerEvilEventNow } from '../evilEvent';
 
 const XP_PER_MESSAGE = 5;
 const SANITY_LOSS_PER_GIF = 10;
@@ -15,8 +16,9 @@ const WEIGHT_PER_MESSAGE = 1;
 
 const xpCooldowns = new Map<string, number>();
 const XP_COOLDOWN_MS = 10_000;
-const WORK_COOLDOWNS = new Map<string, number>();
-const WORK_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour
+
+// Rolling window of timestamps for insurance mentions (test trigger)
+const insuranceMentionTimes: number[] = [];
 
 function isGif(message: Message): boolean {
   if (message.content.match(/\.gif(\?|$)/i)) return true;
@@ -42,6 +44,17 @@ export default {
         await message.channel.send(
           `please don't talk about personal topics :(\n\n**Trauma dumping** (n.): The unsolicited oversharing of personal pain, distress, or hardship with someone who did not consent to receiving it or insurance. Often occurs in casual settings. Please speak to a licensed professional instead. Thank you.`
         );
+      }
+
+      // Test trigger: 5 insurance mentions in 60 seconds starts the evil event
+      const now = Date.now();
+      insuranceMentionTimes.push(now);
+      while (insuranceMentionTimes.length > 0 && insuranceMentionTimes[0] < now - 60_000) {
+        insuranceMentionTimes.shift();
+      }
+      if (insuranceMentionTimes.length >= 5) {
+        insuranceMentionTimes.length = 0;
+        triggerEvilEventNow().catch(console.error);
       }
     }
     console.log(`Message from ${message.author.tag} | attachments: ${message.attachments.size} | embeds: ${message.embeds.length} | content: ${message.content.substring(0, 100)}`);

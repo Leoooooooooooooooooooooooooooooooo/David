@@ -242,3 +242,19 @@ export async function weightGain(userId: string, amount : number) {
   );
   return res.rows[0];
 }
+
+export async function getAllUsers(guildId: string): Promise<{ user_id: string }[]> {
+  const res = await pool.query('SELECT user_id FROM users WHERE guild_id = $1', [guildId]);
+  return res.rows;
+}
+
+export async function killAllUsers(guildId: string): Promise<void> {
+  await pool.query(`
+    UPDATE users
+    SET xp = 0, level = 1, status = 0, sanity = 100, deaths = deaths + 1,
+        hunger = 100, weight = 50, dryness = 50, money = 0,
+        is_sick = FALSE, insurance_paid = FALSE, insurance_paid_at = NULL,
+        updated_at = NOW()
+    WHERE guild_id = $1
+  `, [guildId]);
+}

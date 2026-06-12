@@ -1,6 +1,7 @@
 import { Client, Collection, Events, GatewayIntentBits, Interaction } from 'discord.js';
 import dotenv from 'dotenv';
 import { initDb, regenSanityAll, decreaseDrynessAll, expireInsuranceAll } from './db/index';
+import { initEvilEvent } from './evilEvent';
 
 
 import readyEvent from './events/ready';
@@ -14,6 +15,7 @@ import * as insuranceCommand from './commands/insurance';
 import * as eatCommand from './commands/eat';
 import * as workCommand from './commands/work';
 import * as recoverCommand from './commands/recover';
+import * as guessCommand from './commands/guess';
 
 
 dotenv.config();
@@ -37,8 +39,12 @@ commands.set(insuranceCommand.data.name, insuranceCommand);
 commands.set(eatCommand.data.name, eatCommand);
 commands.set(workCommand.data.name, workCommand);
 commands.set(recoverCommand.data.name, recoverCommand);
+commands.set(guessCommand.data.name, guessCommand);
 
-client.once(Events.ClientReady, (c) => readyEvent.execute(c));
+client.once(Events.ClientReady, (c) => {
+  readyEvent.execute(c);
+  initEvilEvent(c);
+});
 client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
 client.on(Events.VoiceStateUpdate, (oldState, newState) => voiceStateUpdateEvent.execute(oldState, newState));
 
