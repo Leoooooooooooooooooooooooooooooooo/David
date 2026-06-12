@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, addMoney} from '../db/index';
+import { getOrCreateUser, addMoney,loseSanity} from '../db/index';
 
 
 
@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const user = await getOrCreateUser(userId, guildId);
 
 
-
+await loseSanity(userId,guildId,5); 
 const currentMoney = user.money;
 const jackpotRoll = Math.floor(Math.random() * 1000) + 1;
 let earned =0;
@@ -29,7 +29,7 @@ const netChange = earned - user.money;
 
 await addMoney(userId, netChange); 
 if (isJackpot) {
-await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! with a total of **$${earned}**`);
+await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! your so rich! with a total of **$${earned}**`);
 } else {
 await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**`);
 }
