@@ -16,11 +16,22 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
 
 const currentMoney = user.money;
-const earned = Math.floor(Math.random() * ((user.money * 2) + 1)); //between 0 and double all of their money
+const jackpotRoll = Math.floor(Math.random() * 1000) + 1;
+let earned =0;
+let isJackpot = false;
+if (jackpotRoll === 1) {
+    earned = user.money +1000;
+    isJackpot = true;
+} else {
+earned = Math.floor(Math.random() * ((user.money * 2.5) + 1)); //between 0 and 2.5 all of their money
+}
 const netChange = earned - user.money;
 
 await addMoney(userId, netChange); 
-
-await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and got **$${earned}**`);
+if (isJackpot) {
+await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has $1000 more! with a total of **$${earned}**`);
+} else {
+await interaction.reply(`🎰 **${interaction.user.displayName}** had **$${currentMoney}**, gambled and now has **$${earned}**`);
+}
 
 }
