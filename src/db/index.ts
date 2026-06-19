@@ -154,10 +154,19 @@ export async function killUser(userId: string) {
 
 export async function getLeaderboard(guildId: string) {
   const res = await pool.query(
-    `SELECT user_id, xp, level, status, sanity, deaths
+    `SELECT user_id, xp, level, status, sanity, deaths, money, is_sick, taxes_paid, insurance_paid,
+      (
+        xp
+        + money * 2
+        + status * 5
+        + sanity * 3
+        + CASE WHEN taxes_paid THEN 75 ELSE -75 END
+        + CASE WHEN insurance_paid THEN 50 ELSE 0 END
+        - CASE WHEN is_sick THEN 60 ELSE 0 END
+      ) AS score
      FROM users
      WHERE guild_id = $1
-     ORDER BY xp DESC
+     ORDER BY score DESC
      LIMIT 10`,
     [guildId]
   );

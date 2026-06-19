@@ -7,7 +7,7 @@ import { getLeaderboard } from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('leaderboard')
-  .setDescription('See who is winning (or losing the most sanity)');
+  .setDescription('See who is actually winning');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const guildId = interaction.guildId!;
@@ -29,14 +29,25 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         username = user.displayName;
       } catch {}
 
-      return `${medal} **${username}** — ${row.xp} XP · Lvl ${row.level} · ${row.status} Status · 🧠 ${row.sanity}/100`;
+      const flags = [
+        row.is_sick ? '🤧' : null,
+        !row.taxes_paid ? '📋❌' : null,
+        !row.insurance_paid ? '🛡️❌' : null,
+      ].filter(Boolean).join(' ');
+
+      return (
+        `${medal} **${username}** — Score: **${row.score}**\n` +
+        `　XP ${row.xp} · Lvl ${row.level} · $${row.money} · 🧠 ${row.sanity}/100 · 💀 ${row.deaths}` +
+        (flags ? ` · ${flags}` : '')
+      );
     })
   );
 
   const embed = new EmbedBuilder()
     .setTitle('🏆 Leaderboard')
-    .setDescription(description.join('\n'))
+    .setDescription(description.join('\n\n'))
     .setColor(0x5865f2)
+    .setFooter({ text: 'Score = XP + money×2 + status×5 + sanity×3 + insurance bonus ± tax/sick penalties' })
     .setTimestamp();
 
   await interaction.reply({ embeds: [embed] });

@@ -26,6 +26,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     ? `✅ Paid on ${new Date(user.insurance_paid_at).toLocaleDateString('en-CA')}`
     : '❌ Unpaid lol';
 
+  const taxStatus = user.taxes_paid ? '✅ Filed' : '❌ Not filed';
+
   const embed = new EmbedBuilder()
     .setTitle(`📊 ${target.displayName}'s Stats`)
     .setThumbnail(target.displayAvatarURL())
@@ -42,7 +44,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       { name: '<:davidmoney:1514872079491530852> Money', value: `$${user.money}`, inline: true },
       { name: '<:daviddryness:1514872059921043566> Dryness', value: `${getBar(user.dryness)} ${user.dryness}/100`, inline: false },
       { name: '<:davidsick:1514872041822617630> Sick', value: user.is_sick ? 'Yes' : 'No', inline: true },
-      { name: '<:davidinsurance:1514872007198638111> Insurance', value: insuranceStatus, inline: true }
+      { name: '<:davidinsurance:1514872007198638111> Insurance', value: insuranceStatus, inline: true },
+      { name: '📋 Taxes', value: taxStatus, inline: true }
     )
     .setFooter({ text: getSanityMessage(user.sanity) })
     .setTimestamp();
