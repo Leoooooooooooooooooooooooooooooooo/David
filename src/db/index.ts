@@ -29,7 +29,8 @@ export async function initDb(): Promise<void> {
       insurance_paid      BOOLEAN NOT NULL DEFAULT FALSE,
       insurance_paid_at   TIMESTAMP,
       hunger              INTEGER NOT NULL DEFAULT 100,
-      weight              INTEGER NOT NULL DEFAULT 50
+      weight              INTEGER NOT NULL DEFAULT 50,
+      taxes_paid          BOOLEAN NOT NULL DEFAULT FALSE
     );
   `);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS money INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
@@ -40,6 +41,7 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS hunger INTEGER NOT NULL DEFAULT 100;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS taxes_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
 
   console.log('Database initialized.');
 }
@@ -267,4 +269,45 @@ export async function killAllUsers(guildId: string): Promise<void> {
         updated_at = NOW()
     WHERE guild_id = $1
   `, [guildId]);
+}
+
+export async function gainSanity(userId: string, amount: number) {
+  const res = await pool.query(
+    `UPDATE users SET sanity = LEAST(100, sanity + $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [amount, userId]
+  );
+  return res.rows[0];
+}
+
+export async function payTaxes(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET taxes_paid = TRUE, updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
+export async function applyTaxPenalties(guildId: string): Promise<{ user_id: string; old_money: number; new_money: number }[]> {
+  const before = await pool.query(
+    `SELECT user_id, money FROM users WHERE guild_id = $1 AND taxes_paid = FALSE AND money > 0`,
+    [guildId]
+  );
+  if (before.rows.length === 0) return [];
+  await pool.query(
+    `UPDATE users SET money = FLOOR(money * 0.75), updated_at = NOW()
+     WHERE guild_id = $1 AND taxes_paid = FALSE AND money > 0`,
+    [guildId]
+  );
+  return before.rows.map((row: { user_id: string; money: number }) => ({
+    user_id: row.user_id,
+    old_money: row.money,
+    new_money: Math.floor(row.money * 0.75),
+  }));
+}
+
+export async function resetTaxesAll(guildId: string): Promise<void> {
+  await pool.query(
+    `UPDATE users SET taxes_paid = FALSE, updated_at = NOW() WHERE guild_id = $1`,
+    [guildId]
+  );
 }

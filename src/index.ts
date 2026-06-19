@@ -2,6 +2,7 @@ import { Client, Collection, Events, GatewayIntentBits, Interaction } from 'disc
 import dotenv from 'dotenv';
 import { initDb, regenSanityAll, decreaseDrynessAll, expireInsuranceAll } from './db/index';
 import { initEvilEvent } from './evilEvent';
+import { initTaxEvent } from './taxEvent';
 
 
 import readyEvent from './events/ready';
@@ -17,6 +18,10 @@ import * as workCommand from './commands/work';
 import * as recoverCommand from './commands/recover';
 import * as guessCommand from './commands/guess';
 import * as gambleCommand from './commands/gamble';
+import * as assassinateCommand from './commands/assassinate';
+import * as strollCommand from './commands/stroll';
+import * as giftCommand from './commands/gift';
+import * as taxesCommand from './commands/taxes';
 
 
 dotenv.config();
@@ -42,10 +47,15 @@ commands.set(workCommand.data.name, workCommand);
 commands.set(recoverCommand.data.name, recoverCommand);
 commands.set(guessCommand.data.name, guessCommand);
 commands.set(gambleCommand.data.name, gambleCommand);
+commands.set(assassinateCommand.data.name, assassinateCommand);
+commands.set(strollCommand.data.name, strollCommand);
+commands.set(giftCommand.data.name, giftCommand);
+commands.set(taxesCommand.data.name, taxesCommand);
 
 client.once(Events.ClientReady, (c) => {
   readyEvent.execute(c);
   initEvilEvent(c);
+  initTaxEvent(c);
 });
 client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
 client.on(Events.VoiceStateUpdate, (oldState, newState) => voiceStateUpdateEvent.execute(oldState, newState));

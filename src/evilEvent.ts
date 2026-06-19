@@ -19,6 +19,7 @@ const state: EvilEventState = {
 };
 
 let discordClient: Client | null = null;
+let pendingEventTimeout: NodeJS.Timeout | null = null;
 
 export function initEvilEvent(client: Client): void {
   discordClient = client;
@@ -56,18 +57,31 @@ function msUntilNextEvent(alwaysTomorrow: boolean): number {
 }
 
 function scheduleNextEvent(alwaysTomorrow: boolean): void {
+  if (pendingEventTimeout) {
+    clearTimeout(pendingEventTimeout);
+    pendingEventTimeout = null;
+  }
   const ms = msUntilNextEvent(alwaysTomorrow);
   const hours = (ms / 3_600_000).toFixed(1);
   console.log(`[EvilEvent] Next evil event in ${hours} hours`);
-  setTimeout(startEvilEvent, ms);
+  pendingEventTimeout = setTimeout(startEvilEvent, ms);
 }
 
 export async function triggerEvilEventNow(): Promise<void> {
   if (state.active) return;
+  // Only allow manual trigger within the normal 6–10:59 PM ET window
+  const etParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour: '2-digit', hour12: false,
+  }).formatToParts(new Date());
+  const etHour = parseInt(etParts.find(p => p.type === 'hour')!.value);
+  if (etHour < 18 || etHour >= 23) return;
   await startEvilEvent();
 }
 
 async function startEvilEvent(): Promise<void> {
+  pendingEventTimeout = null;
+  if (state.active) return;
   if (!discordClient) return;
 
   const words = getWords();
