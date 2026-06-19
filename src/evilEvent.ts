@@ -2,12 +2,16 @@ import { Client, TextChannel } from 'discord.js';
 import { getAllUsers, killAllUsers } from './db/index';
 import { getWords } from './words';
 
+const MAX_GUESSES_PER_USER = 3;
+const WRONG_GUESS_SANITY_COST = 10;
+
 interface EvilEventState {
   active: boolean;
   word: string;
   guildId: string;
   channelId: string;
   killedByTimeout: NodeJS.Timeout | null;
+  userGuesses: Map<string, number>;
 }
 
 const state: EvilEventState = {
@@ -16,6 +20,7 @@ const state: EvilEventState = {
   guildId: '',
   channelId: '',
   killedByTimeout: null,
+  userGuesses: new Map(),
 };
 
 let discordClient: Client | null = null;
@@ -113,6 +118,7 @@ async function startEvilEvent(): Promise<void> {
   state.word = word;
   state.guildId = guildId;
   state.channelId = channelId;
+  state.userGuesses = new Map();
 
   const users = await getAllUsers(guildId);
   const mentions = users.map((u: { user_id: string }) => `<@${u.user_id}>`).join(' ');
@@ -123,10 +129,11 @@ async function startEvilEvent(): Promise<void> {
     `I have chosen an evil **5-letter password**. Guess it or im gonna kill you all.\n` +
     `Use \`/guess <word>\` — it works like Wordle:\n` +
     `🟩 right letter, right spot  |  🟨 right letter, wrong spot  |  ⬛ not in my evil password\n\n` +
-    `⏰ You have **1 hour**. Fail... and **EVERYONE DIES.**`
+    `⚠️ Each person only gets **${MAX_GUESSES_PER_USER} guesses**. Wrong guesses cost **${WRONG_GUESS_SANITY_COST} sanity**. Choose wisely.\n` +
+    `⏰ You have **15 minutes**. Fail... and **EVERYONE DIES.**`
   );
 
-  state.killedByTimeout = setTimeout(everyoneDies, 60 * 60 * 1000);
+  state.killedByTimeout = setTimeout(everyoneDies, 15 * 60 * 1000);
 
   // Schedule the next event for tomorrow's window
   scheduleNextEvent(true);
@@ -195,10 +202,18 @@ export interface GuessResult {
   hint: string;
   isCorrect: boolean;
   secretWord?: string;
+  outOfGuesses?: boolean;
+  guessesUsed?: number;
+  guessesRemaining?: number;
 }
 
-export function processGuess(guess: string): GuessResult | null {
+export function processGuess(guess: string, userId: string): GuessResult | null {
   if (!state.active) return null;
+
+  const used = state.userGuesses.get(userId) ?? 0;
+  if (used >= MAX_GUESSES_PER_USER) {
+    return { hint: '', isCorrect: false, outOfGuesses: true, guessesUsed: used, guessesRemaining: 0 };
+  }
 
   const normalized = guess.toUpperCase().trim();
   const hint = getWordleHint(state.word, normalized);
@@ -215,5 +230,14 @@ export function processGuess(guess: string): GuessResult | null {
     return { hint, isCorrect: true, secretWord };
   }
 
-  return { hint, isCorrect: false };
+  const newUsed = used + 1;
+  state.userGuesses.set(userId, newUsed);
+  return {
+    hint,
+    isCorrect: false,
+    guessesUsed: newUsed,
+    guessesRemaining: MAX_GUESSES_PER_USER - newUsed,
+  };
 }
+
+export { WRONG_GUESS_SANITY_COST };

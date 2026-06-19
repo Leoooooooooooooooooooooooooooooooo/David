@@ -13,7 +13,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (user.taxes_paid) {
     await interaction.reply({
-      content: `✅ **${interaction.user.displayName}** already filed their taxes this month. Good citizen. Go away.`,
+      content: `✅ **${interaction.user.displayName}** already filed their taxes this month good j*b`,
       ephemeral: true,
     });
     return;
@@ -22,6 +22,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await payTaxes(userId);
 
   await interaction.reply(
-    `📋 **${interaction.user.displayName}** filed their taxes. The IRS is temporarily satisfied with you. Don't forget next month.`
+    `📋 **${interaction.user.displayName}** filed their taxes. David is pleased`
   );
 }

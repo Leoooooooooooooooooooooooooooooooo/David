@@ -52,19 +52,29 @@ async function checkMonthlyTaxes(): Promise<void> {
 
   if (penalized.length === 0) {
     await channel.send(
-      `📋 **TAX SEASON IS OVER.** Everyone filed their taxes this month. Surprisingly responsible of you all.`
+      `**TAX SEASON IS OVER.** Everyone filed their taxes this month lol`
     );
     return;
   }
 
+  const mentions = penalized.map(u => `<@${u.user_id}>`).join(' ');
   const lines = penalized
-    .map(u => `💸 <@${u.user_id}>: $${u.old_money} → $${u.new_money}`)
+    .map(u => `💸 <@${u.user_id}>: **$${u.old_money}** → **$${u.new_money}** (-$${u.old_money - u.new_money})`)
     .join('\n');
 
+  // Humiliation message first, pinging all offenders
   await channel.send(
-    `📋 **TAX SEASON IS OVER.**\n\n` +
-    `The following degenerates did NOT file their taxes and have been penalized **25%** of their money by the IRS:\n\n` +
+    `🚨 ${mentions}\n\n` +
+    `ATTENTION EVERYONE. THE ABOVE INDIVIDUALS ARE **TAX EVADERS.** ` +
+    `They had an entire month to type \`/taxes\` and couldn't even do that lmao. ` +
+    `Laugh at these users`
+  );
+
+  // Follow up with the financial damage
+  await channel.send(
+    `📋 **DAVID HAS SPOKEN.**\n\n` +
+    `The following CHUDS have been penalized **25%** of their money:\n\n` +
     lines +
-    `\n\nPay your taxes next month or suffer again.`
+    `\n\n*Next month, just type \`/taxes\`.*`
   );
 }

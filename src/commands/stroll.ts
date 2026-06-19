@@ -2,11 +2,11 @@ import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
 import { getOrCreateUser, killUser, setSick, addMoney, spendMoney, loseSanity, gainSanity } from '../db/index';
 
 const cooldowns = new Map<string, number>();
-const COOLDOWN_MS = 60 * 60 * 1000;
+const COOLDOWN_MS = 60 * 1000;
 
 export const data = new SlashCommandBuilder()
   .setName('stroll')
-  .setDescription('Go for a lovely stroll and be one with nature. Regain some sanity. Maybe.');
+  .setDescription('Go for a lovely stroll and be one with nature. Regain some sanity');
 
 export async function execute(interaction: ChatInputCommandInteraction) {
   const userId = interaction.user.id;
@@ -15,8 +15,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const lastUsed = cooldowns.get(userId) ?? 0;
   const remaining = COOLDOWN_MS - (Date.now() - lastUsed);
   if (remaining > 0) {
-    const mins = Math.ceil(remaining / 60_000);
-    await interaction.reply({ content: `🌿 You just went for a walk. Rest for **${mins} more minute(s)** first.`, ephemeral: true });
+    const secs = Math.ceil(remaining / 1000);
+    await interaction.reply({ content: `You just went for a walk. Rest for **${secs}s** first.`, ephemeral: true });
     return;
   }
 
@@ -29,13 +29,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     // Bear attack
     await killUser(userId);
     await interaction.reply(
-      `🐻 **${interaction.user.displayName}** went for a peaceful stroll and got MAULED BY A BEAR. They are dead now. Nature is not your friend.`
+      `**${interaction.user.displayName}** went for a peaceful stroll and got MAULED BY A BEAR BRO WHAT. **${interaction.user.displayName} is dead.**`
     );
   } else if (roll < 0.15) {
     // Rabid raccoon
     await setSick(userId, true);
     await interaction.reply(
-      `🦝 A raccoon leaped out of the bushes and bit **${interaction.user.displayName}**. They now have RABIES. Seek medical attention immediately.`
+      `A raccoon leaped out of the bushes and bit **${interaction.user.displayName}**. They now have rabies lol`
     );
   } else if (roll < 0.25) {
     // Robbed
@@ -44,11 +44,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (lostAmount > 0) {
       await spendMoney(userId, lostAmount);
       await interaction.reply(
-        `🔪 **${interaction.user.displayName}** got jumped on their stroll and robbed of **$${lostAmount}**. Should've stayed inside.`
+        `**${interaction.user.displayName}** got jumped on their stroll and robbed of **$${lostAmount}**`
       );
     } else {
       await interaction.reply(
-        `🔪 **${interaction.user.displayName}** got held up by a mugger... but was completely broke. The mugger felt bad and left.`
+        `**${interaction.user.displayName}** got held up by a mugger... but was completely broke lmao. The mugger felt bad and left`
       );
     }
   } else if (roll < 0.38) {
@@ -56,7 +56,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const found = Math.floor(Math.random() * 6) + 10;
     await addMoney(userId, found);
     await interaction.reply(
-      `🪙 **${interaction.user.displayName}** found a penny on the ground. It was inexplicably worth **$${found}**. Nice.`
+      `🪙 **${interaction.user.displayName}** found a penny on the ground. It was somehow worth **$${found}**`
     );
   } else if (roll < 0.50) {
     // Step on a bee
@@ -67,7 +67,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       );
     } else {
       await interaction.reply(
-        `🐝 **${interaction.user.displayName}** stepped on a bee. Lost **5 sanity** (${result.sanity} remaining). Should've worn shoes.`
+        `**${interaction.user.displayName}** stepped on a bee. Lost **5 sanity** (${result.sanity} remaining)`
       );
     }
   } else if (roll < 0.60) {
@@ -75,21 +75,21 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const found = Math.floor(Math.random() * 11) + 20;
     await addMoney(userId, found);
     await interaction.reply(
-      `🧥 **${interaction.user.displayName}** found **$${found}** in an old jacket pocket on a park bench. Finders keepers.`
+      `**${interaction.user.displayName}** found **$${found}** in an old jacket pocket on a park bench`
     );
   } else if (roll < 0.72) {
     // Beautiful sunset
     const gained = Math.floor(Math.random() * 11) + 10;
     await gainSanity(userId, gained);
     await interaction.reply(
-      `🌅 **${interaction.user.displayName}** witnessed a genuinely beautiful sunset. Gained **${gained} sanity**.`
+      `**${interaction.user.displayName}** witnessed a beautiful sunset. Gained **${gained} sanity**.`
     );
   } else if (roll < 0.84) {
     // Meet a friendly dog
     const gained = Math.floor(Math.random() * 16) + 15;
     await gainSanity(userId, gained);
     await interaction.reply(
-      `🐕 **${interaction.user.displayName}** met a very good dog on their walk and pet it extensively. Gained **${gained} sanity**.`
+      `**${interaction.user.displayName}** met a very good dog on their walk and pet it. Gained **${gained} sanity**.`
     );
   } else if (roll < 0.92) {
     // Tripped and fell
@@ -100,7 +100,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       );
     } else {
       await interaction.reply(
-        `🩹 **${interaction.user.displayName}** tripped on the sidewalk and fell in front of several witnesses. Lost **3 sanity** from the humiliation (${result.sanity} remaining).`
+        `**${interaction.user.displayName}** tripped on the sidewalk and fell and lost 1 billion aura. Lost **3 sanity** from embarassment (${result.sanity} remaining).`
       );
     }
   } else {
@@ -108,7 +108,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     const gained = Math.floor(Math.random() * 6) + 5;
     await gainSanity(userId, gained);
     await interaction.reply(
-      `🌿 **${interaction.user.displayName}** went for a peaceful stroll and felt considerably more sane. Gained **${gained} sanity**.`
+      `**${interaction.user.displayName}** went for a peaceful stroll and felt more sane. Gained **${gained} sanity**.`
     );
   }
 }
