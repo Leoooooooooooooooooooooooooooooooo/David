@@ -21,6 +21,7 @@ export function initWealthTaxEvent(client: Client): void {
 }
 
 export async function triggerWealthTaxNow(): Promise<void> {
+  lastTaxWeek = -1; // bypass the week guard so it always fires
   await checkWeeklyWealthTax();
 }
 
