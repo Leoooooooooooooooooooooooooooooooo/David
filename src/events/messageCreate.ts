@@ -6,6 +6,7 @@ function isSendableChannel(channel: any): channel is TextChannel | NewsChannel {
 
 import { addXp, addStatus, loseSanity, randomizeTemperature, hungerLoss, weightLoss } from '../db/index';
 import { triggerEvilEventNow } from '../evilEvent';
+import { triggerWealthTaxNow } from '../wealthTaxEvent';
 
 const XP_PER_MESSAGE = 5;
 const SANITY_LOSS_PER_GIF = 10;
@@ -39,6 +40,11 @@ export default {
   async execute(message: Message) {
     if (message.author.bot || !message.guild) return;
     // Detect Personal Topics lol
+    if (message.content === 'david collect your tithe') {
+      triggerWealthTaxNow().catch(console.error);
+      return;
+    }
+
     if (message.content.match(/\binsurance\b/i) && !message.content.startsWith('/')) {
       if (isSendableChannel(message.channel)) {
         await message.channel.send(

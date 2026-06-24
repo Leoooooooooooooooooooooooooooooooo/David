@@ -54,17 +54,17 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (roll < 0.50) {
     await interaction.reply(
-      `🔫 **${interaction.user.displayName}** paid **$${cost}** to have **${target.displayName}** killed... and the hitman completely botched it. Money gone. Target alive. Embarrassing.`
+      `🔫 **${interaction.user.displayName}** paid **$${cost}** to have **${target.displayName}** killed... and the hitman biffed it lol`
     );
   } else if (roll < 0.75) {
     await killUser(userId);
     await interaction.reply(
-      `💀 **${interaction.user.displayName}** tried to assassinate **${target.displayName}**... and got double-crossed by their own hitman. Paid $${cost} to die. Incredible.`
+      `💀 **${interaction.user.displayName}** tried to assassinate **${target.displayName}**... and got double-crossed by their own hitman. Paid $${cost} to die lol`
     );
   } else {
     await killUser(target.id);
     await interaction.reply(
-      `☠️ **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Cold.`
+      `☠️ **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Damn.`
     );
   }
 }

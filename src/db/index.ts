@@ -43,6 +43,14 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS taxes_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
 
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS david_fund (
+      id      INTEGER PRIMARY KEY DEFAULT 1,
+      total   BIGINT NOT NULL DEFAULT 0,
+      CHECK (id = 1)
+    );
+    INSERT INTO david_fund (id, total) VALUES (1, 0) ON CONFLICT DO NOTHING;
+  `);
   console.log('Database initialized.');
 }
 
@@ -319,4 +327,27 @@ export async function resetTaxesAll(guildId: string): Promise<void> {
     `UPDATE users SET taxes_paid = FALSE, updated_at = NOW() WHERE guild_id = $1`,
     [guildId]
   );
+}
+
+// ── David's Secret Fund ──────────────────────────────────────────────────────
+
+export async function getFund(): Promise<bigint> {
+  const res = await pool.query(`SELECT total FROM david_fund WHERE id = 1`);
+  return BigInt(res.rows[0].total);
+}
+
+export async function addToFund(amount: number): Promise<bigint> {
+  const res = await pool.query(
+    `UPDATE david_fund SET total = total + $1 WHERE id = 1 RETURNING total`,
+    [amount]
+  );
+  return BigInt(res.rows[0].total);
+}
+
+export async function getTop3ByMoney(guildId: string): Promise<{ user_id: string; money: number }[]> {
+  const res = await pool.query(
+    `SELECT user_id, money FROM users WHERE guild_id = $1 AND money > 0 ORDER BY money DESC LIMIT 3`,
+    [guildId]
+  );
+  return res.rows;
 }

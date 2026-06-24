@@ -15,6 +15,7 @@ import * as assassinateCommand from './commands/assassinate';
 import * as strollCommand from './commands/stroll';
 import * as giftCommand from './commands/gift';
 import * as taxesCommand from './commands/taxes';
+import * as fundCommand from './commands/fund';
 
 
 const commands = [
@@ -31,6 +32,7 @@ const commands = [
   strollCommand.data.toJSON(),
   giftCommand.data.toJSON(),
   taxesCommand.data.toJSON(),
+  fundCommand.data.toJSON(),
 ];
 
 const rest = new REST().setToken(process.env.DISCORD_TOKEN!);

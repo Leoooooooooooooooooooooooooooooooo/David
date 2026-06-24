@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import { initDb, regenSanityAll, decreaseDrynessAll, expireInsuranceAll } from './db/index';
 import { initEvilEvent } from './evilEvent';
 import { initTaxEvent } from './taxEvent';
+import { initWealthTaxEvent } from './wealthTaxEvent';
 
 
 import readyEvent from './events/ready';
@@ -22,6 +23,7 @@ import * as assassinateCommand from './commands/assassinate';
 import * as strollCommand from './commands/stroll';
 import * as giftCommand from './commands/gift';
 import * as taxesCommand from './commands/taxes';
+import * as fundCommand from './commands/fund';
 
 
 dotenv.config();
@@ -51,11 +53,13 @@ commands.set(assassinateCommand.data.name, assassinateCommand);
 commands.set(strollCommand.data.name, strollCommand);
 commands.set(giftCommand.data.name, giftCommand);
 commands.set(taxesCommand.data.name, taxesCommand);
+commands.set(fundCommand.data.name, fundCommand);
 
 client.once(Events.ClientReady, (c) => {
   readyEvent.execute(c);
   initEvilEvent(c);
   initTaxEvent(c);
+  initWealthTaxEvent(c);
 });
 client.on(Events.MessageCreate, (msg) => messageCreateEvent.execute(msg));
 client.on(Events.VoiceStateUpdate, (oldState, newState) => voiceStateUpdateEvent.execute(oldState, newState));
