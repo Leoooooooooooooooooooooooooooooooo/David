@@ -23,9 +23,17 @@ const QUINTILLION = BigInt('1000000000000000000');
 
 async function showStatus(interaction: ChatInputCommandInteraction) {
   const total = await getFund();
-  const percent = Number((total * BigInt(10000) / QUINTILLION)) / 100;
 
-  const progressFilled = Math.floor(percent / 5);
+  // Compute percent with 20 decimal places of precision using BigInt arithmetic
+  const DECIMALS = 20;
+  const scale = BigInt(10) ** BigInt(DECIMALS + 2); // +2 for the "out of 100" conversion
+  const percentBig = total * scale / QUINTILLION;
+  const percentStr = percentBig.toString().padStart(DECIMALS + 3, '0');
+  const intPart = percentStr.slice(0, -DECIMALS) || '0';
+  const fracPart = percentStr.slice(-DECIMALS);
+  const percentDisplay = `${intPart}.${fracPart.replace(/0+$/, '') || '0'}`;
+
+  const progressFilled = Math.min(20, Math.floor(Number(total * BigInt(20) / QUINTILLION)));
   const progressBar = '█'.repeat(progressFilled) + '░'.repeat(20 - progressFilled);
 
   const embed = new EmbedBuilder()
@@ -33,7 +41,7 @@ async function showStatus(interaction: ChatInputCommandInteraction) {
     .setDescription(
       `**Current Total:** $${total.toLocaleString()}\n\n` +
       `**Progress to Quintillion:**\n` +
-      `\`[${progressBar}]\` ${percent.toFixed(40)}%\n\n` +
+      `\`[${progressBar}]\` ${percentDisplay}%\n\n` +
       `*The top 3 richest players are taxed weekly: #1 pays 66%, #2 pays 50%, #3 pays 33%.\n` +
       `Failure to pay kills you lol*`
     )
