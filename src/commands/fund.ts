@@ -33,7 +33,7 @@ async function showStatus(interaction: ChatInputCommandInteraction) {
     .setDescription(
       `**Current Total:** $${total.toLocaleString()}\n\n` +
       `**Progress to Quintillion:**\n` +
-      `\`[${progressBar}]\` ${percent.toFixed(4)}%\n\n` +
+      `\`[${progressBar}]\` ${percent.toFixed(9)}%\n\n` +
       `*The top 3 richest players are taxed weekly: #1 pays 66%, #2 pays 50%, #3 pays 33%.\n` +
       `Failure to pay kills you lol*`
     )
