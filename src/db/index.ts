@@ -42,6 +42,8 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS hunger INTEGER NOT NULL DEFAULT 100;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS taxes_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS promotion_level INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS gamble_streak INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS david_fund (
@@ -152,10 +154,32 @@ export async function killUser(userId: string) {
          is_sick = FALSE,
          insurance_paid = FALSE,
          insurance_paid_at = NULL,
+         promotion_level = 0,
+         gamble_streak = 0,
          updated_at = NOW()
      WHERE user_id = $1
      RETURNING *`,
     [userId]
+  );
+  return res.rows[0];
+}
+
+export async function promoteUser(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET promotion_level = promotion_level + 1, updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
+export async function updateGambleStreak(userId: string, won: boolean) {
+  const res = await pool.query(
+    `UPDATE users
+     SET gamble_streak = CASE WHEN $2 THEN GREATEST(0, gamble_streak) + 1 ELSE LEAST(0, gamble_streak) - 1 END,
+         updated_at = NOW()
+     WHERE user_id = $1
+     RETURNING *`,
+    [userId, won]
   );
   return res.rows[0];
 }
@@ -244,15 +268,15 @@ export async function hungerGain(userId: string, amount : number) {
   return res.rows[0];
 }
 
-export async function hungerLoss(userId: string, amount : number) {
+export async function hungerLoss(userId: string, amount: number) {
   const res = await pool.query(
     `UPDATE users SET hunger = GREATEST(0, hunger - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
     [amount, userId]
   );
-  return res.rows[0];
   if (res.rows[0].hunger === 0) {
     await killUser(userId);
   }
+  return res.rows[0];
 }
 
 export async function weightLoss(userId: string, amount : number) {
