@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { addMoney, loseSanity, updateGambleStreak } from '../db/index';
+import { getOrCreateUser, addMoney, loseSanity, updateGambleStreak } from '../db/index';
 
 export const data = new SlashCommandBuilder()
   .setName('gamble')
@@ -9,19 +9,20 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const userId = interaction.user.id;
   const guildId = interaction.guildId!;
 
-  const sanityResult = await loseSanity(userId, guildId, 5);
-
-  if (sanityResult.money <= 0 && !sanityResult.died) {
+  const user = await getOrCreateUser(userId, guildId);
+  if (user.money <= 0) {
     await interaction.reply(`🎰 **${interaction.user.displayName}** is broke. Nothing to gamble.`);
     return;
   }
+
+  const sanityResult = await loseSanity(userId, guildId, 5);
 
   if (sanityResult.died) {
     await interaction.reply(`<:daviddeath:1513943034738245794> **${interaction.user.displayName}** lost their mind gambling and DIED. All their money is GONE.`);
     return;
   }
 
-  const currentMoney = sanityResult.money as number;
+  const currentMoney = user.money as number;
   const jackpotRoll = Math.floor(Math.random() * 1000) + 1;
   let earned = 0;
   let isJackpot = false;
