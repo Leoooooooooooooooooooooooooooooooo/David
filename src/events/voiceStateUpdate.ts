@@ -19,7 +19,7 @@ setInterval(async () => {
     if (minutesInVc > 0) {
       await addXp(userId, guildId, XP_PER_MINUTE_IN_VC);
       
-      vcMinuteTracker.set(key, (vcMinuteTracker.get(key)) + 1);
+      vcMinuteTracker.set(key, (vcMinuteTracker.get(key) ?? 0) + 1);
       if (vcMinuteTracker.get(key) === 5){
         await hungerLoss(userId, HUNGER_LOSS_PER_5_MINUTE_IN_VC);
       }else if (vcMinuteTracker.get(key) >= 10){

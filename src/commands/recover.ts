@@ -19,10 +19,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const updated = await loseSanity(userId, guildId, 50);
 
   if (updated.died) {
-    await interaction.reply(`<:daviddeath:1513943034738245794> **${interaction.user.displayName}** tried to recover but lost their mind entirely and died lol.`);
+    await interaction.reply(`<:daviddeath:1513943034738245794> **${interaction.user.displayName}** only had **${user.sanity} sanity** — recovering costs 50. Their sanity hit 0 and they DIED. Maybe check \`/stats\` before recovering next time lol`);
     return;
   }
 
   await setSick(userId, false);
-  await interaction.reply(`<:davidrecover:1514872024596611122> **${interaction.user.displayName}** spent 50 sanity and recovered... the noises...`);
+  await interaction.reply(`<:davidrecover:1514872024596611122> **${interaction.user.displayName}** spent 50 sanity and recovered... the noises... (**${updated.sanity} sanity** remaining)`);
 }

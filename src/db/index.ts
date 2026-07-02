@@ -273,9 +273,6 @@ export async function hungerLoss(userId: string, amount: number) {
     `UPDATE users SET hunger = GREATEST(0, hunger - $1), updated_at = NOW() WHERE user_id = $2 RETURNING *`,
     [amount, userId]
   );
-  if (res.rows[0].hunger === 0) {
-    await killUser(userId);
-  }
   return res.rows[0];
 }
 
