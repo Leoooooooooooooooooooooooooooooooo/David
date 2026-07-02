@@ -28,7 +28,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   let isJackpot = false;
 
   if (jackpotRoll === 1) {
-    earned = currentMoney + 1000;
+    earned = currentMoney * 1000;
     isJackpot = true;
   } else {
     earned = Math.floor(Math.random() * ((currentMoney * 2.5) + 1));
@@ -50,8 +50,13 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   if (isJackpot) {
-    await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney.toLocaleString()}**, gambled and now has $1000 more! your so rich! with a total of **$${earned.toLocaleString()}**`);
+    await interaction.reply(`🎉 YOU HIT THE JACKPOT! **${interaction.user.displayName}** had **$${currentMoney.toLocaleString()}** and now has a total of **$${earned.toLocaleString()}**`);
     return;
+  }
+
+  let warnLine = '';
+  if (sanityResult.sanity <= 20) {
+    warnLine = `\n **${sanityResult.sanity} sanity left** — each gamble costs 5. At 0 you DIE.`;
   }
 
   let streakLine = '';
@@ -62,6 +67,6 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   }
 
   await interaction.reply(
-    `<:davidgamble:1514871859206815804> **${interaction.user.displayName}** had **$${currentMoney.toLocaleString()}**, gambled and now has **$${(earned + streakBonus).toLocaleString()}**, and **${sanityResult.sanity}** sanity${streakLine}`
+    `<:davidgamble:1514871859206815804> **${interaction.user.displayName}** had **$${currentMoney.toLocaleString()}**, gambled and now has **$${(earned + streakBonus).toLocaleString()}**, and **${sanityResult.sanity}** sanity${warnLine}${streakLine}`
   );
 }

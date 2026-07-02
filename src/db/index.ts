@@ -1,6 +1,7 @@
-import { Pool } from 'pg';
+import { Pool, types } from 'pg';
 import dotenv from 'dotenv';
 dotenv.config();
+types.setTypeParser(20, (val) => Number(val));
 
 export const pool = new Pool({
   host: process.env.DB_HOST,
@@ -23,7 +24,7 @@ export async function initDb(): Promise<void> {
       deaths        INTEGER NOT NULL DEFAULT 0,
       created_at    TIMESTAMP DEFAULT NOW(),
       updated_at    TIMESTAMP DEFAULT NOW(),
-      money               INTEGER NOT NULL DEFAULT 0,
+      money               BIGINT NOT NULL DEFAULT 0,
       dryness             INTEGER NOT NULL DEFAULT 50,
       is_sick             BOOLEAN NOT NULL DEFAULT FALSE,
       insurance_paid      BOOLEAN NOT NULL DEFAULT FALSE,
@@ -39,6 +40,7 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS insurance_paid_at TIMESTAMP;`).catch(() => {});  
   await pool.query(`ALTER TABLE users ALTER COLUMN temperature TYPE BIGINT;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ALTER COLUMN money TYPE BIGINT;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS hunger INTEGER NOT NULL DEFAULT 100;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS weight INTEGER NOT NULL DEFAULT 50;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS taxes_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
@@ -353,13 +355,13 @@ export async function resetTaxesAll(guildId: string): Promise<void> {
 // ── David's Secret Fund ──────────────────────────────────────────────────────
 
 export async function getFund(): Promise<bigint> {
-  const res = await pool.query(`SELECT total FROM david_fund WHERE id = 1`);
+  const res = await pool.query(`SELECT total::text AS total FROM david_fund WHERE id = 1`);
   return BigInt(res.rows[0].total);
 }
 
 export async function addToFund(amount: number): Promise<bigint> {
   const res = await pool.query(
-    `UPDATE david_fund SET total = total + $1 WHERE id = 1 RETURNING total`,
+    `UPDATE david_fund SET total = total + $1 WHERE id = 1 RETURNING total::text AS total`,
     [amount]
   );
   return BigInt(res.rows[0].total);
