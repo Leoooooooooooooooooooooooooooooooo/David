@@ -4,10 +4,20 @@ import { getOrCreateUser, killUser, spendMoney } from '../db/index';
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 10 * 60 * 1000;
 const MIN_COST = 10;
+const BASE_SUCCESS = 0.25;
+const MAX_SUCCESS = 0.65;
+const BACKFIRE_CHANCE = 0.25;
+const BOUNTY_THRESHOLD = 1000;
+
+function successChance(targetMoney: number): number {
+  if (targetMoney <= BOUNTY_THRESHOLD) return BASE_SUCCESS;
+  const doublings = Math.log2(targetMoney / BOUNTY_THRESHOLD);
+  return Math.min(MAX_SUCCESS, BASE_SUCCESS + doublings * 0.05);
+}
 
 export const data = new SlashCommandBuilder()
   .setName('assassinate')
-  .setDescription('Hire a hitman to eliminate someone. Costs 50% of their money.')
+  .setDescription('Hire a hitman to eliminate someone. The richer the target, the better the odds.')
   .addUserOption(option =>
     option.setName('target').setDescription('Your target').setRequired(true)
   );
@@ -37,11 +47,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const user = await getOrCreateUser(userId, guildId);
   const targetUser = await getOrCreateUser(target.id, guildId);
 
-  const cost = Math.max(MIN_COST, Math.floor(targetUser.money * 0.5));
+  const cost = Math.max(MIN_COST, Math.floor(Math.min(user.money, targetUser.money) * 0.5));
 
   if (user.money < cost) {
     await interaction.reply({
-      content: `🔫 Hiring a hitman on **${target.displayName}** costs **$${cost}** (50% of their $${targetUser.money}). You only have **$${user.money}**. Stay broke.`,
+      content: `🔫 Hiring a hitman on **${target.displayName}** costs **$${cost}**. You only have **$${user.money}**. Stay broke.`,
       ephemeral: true,
     });
     return;
@@ -50,21 +60,23 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   await spendMoney(userId, cost);
   cooldowns.set(userId, Date.now());
 
+  const chance = successChance(targetUser.money);
+  const pct = Math.round(chance * 100);
   const roll = Math.random();
 
-  if (roll < 0.50) {
+  if (roll < chance) {
+    await killUser(target.id);
     await interaction.reply(
-      `🔫 **${interaction.user.displayName}** paid **$${cost}** to have **${target.displayName}** killed... and the hitman biffed it lol`
+      `☠️ **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Damn.\nTheir **$${targetUser.money.toLocaleString()}** fortune made it a **${pct}%** shot. Being rich has consequences.`
     );
-  } else if (roll < 0.75) {
+  } else if (roll < chance + BACKFIRE_CHANCE) {
     await killUser(userId);
     await interaction.reply(
       `💀 **${interaction.user.displayName}** tried to assassinate **${target.displayName}**... and got double-crossed by their own hitman. Paid $${cost} to die lol`
     );
   } else {
-    await killUser(target.id);
     await interaction.reply(
-      `☠️ **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Damn.`
+      `🔫 **${interaction.user.displayName}** paid **$${cost}** to have **${target.displayName}** killed... and the hitman biffed it lol (odds were ${pct}%)`
     );
   }
 }
