@@ -174,6 +174,14 @@ export async function promoteUser(userId: string) {
   return res.rows[0];
 }
 
+export async function demoteUser(userId: string) {
+  const res = await pool.query(
+    `UPDATE users SET promotion_level = GREATEST(promotion_level - 1, 0), updated_at = NOW() WHERE user_id = $1 RETURNING *`,
+    [userId]
+  );
+  return res.rows[0];
+}
+
 export async function updateGambleStreak(userId: string, won: boolean) {
   const res = await pool.query(
     `UPDATE users

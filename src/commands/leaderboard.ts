@@ -14,7 +14,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const rows = await getLeaderboard(guildId);
 
   if (rows.length === 0) {
-    await interaction.reply('Nobody has done anything yet. Disappointing.');
+    await interaction.reply('Nobody has done anything yet');
     return;
   }
 
@@ -30,14 +30,14 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       } catch {}
 
       const flags = [
-        row.is_sick ? '🤧' : null,
+        row.is_sick ? '<:davidsick:1514872041822617630>' : null,
         !row.taxes_paid ? '📋❌' : null,
         !row.insurance_paid ? '🛡️❌' : null,
       ].filter(Boolean).join(' ');
 
       return (
         `${medal} **${username}** — Score: **${row.score}**\n` +
-        `　XP ${row.xp} · Lvl ${row.level} · $${row.money} · 🧠 ${row.sanity}/100 · 💀 ${row.deaths}` +
+        `　XP ${row.xp} · Lvl ${row.level} · $${row.money} · <:davidsanity:1513942977586659420> ${row.sanity}/100 · <:daviddeath:1513943034738245794> ${row.deaths}` +
         (flags ? ` · ${flags}` : '')
       );
     })

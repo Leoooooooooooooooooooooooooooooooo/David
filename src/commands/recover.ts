@@ -12,7 +12,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const user = await getOrCreateUser(userId, guildId);
 
   if (!user.is_sick) {
-    await interaction.reply({ content: `🤧 You're not even sick lol.`, ephemeral: true });
+    await interaction.reply({ content: `<:davidsick:1514872041822617630> You're not even sick lol.`, ephemeral: true });
     return;
   }
 

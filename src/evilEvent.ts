@@ -2,8 +2,8 @@ import { Client, TextChannel } from 'discord.js';
 import { getAllUsers, killAllUsers } from './db/index';
 import { getWords } from './words';
 
-const MAX_GUESSES_PER_USER = 3;
-const WRONG_GUESS_SANITY_COST = 10;
+const MAX_GUESSES_PER_USER = 4;
+const WRONG_GUESS_SANITY_COST = 20;
 
 interface EvilEventState {
   active: boolean;
@@ -130,10 +130,10 @@ async function startEvilEvent(): Promise<void> {
     `Use \`/guess <word>\` — it works like Wordle:\n` +
     `🟩 right letter, right spot  |  🟨 right letter, wrong spot  |  ⬛ not in my evil password\n\n` +
     `⚠️ Each person only gets **${MAX_GUESSES_PER_USER} guesses**. Wrong guesses cost **${WRONG_GUESS_SANITY_COST} sanity**. Choose wisely.\n` +
-    `⏰ You have **15 minutes**. Fail... and **EVERYONE DIES.**`
+    `⏰ You have **5 minutes**. Fail... and **EVERYONE DIES.**`
   );
 
-  state.killedByTimeout = setTimeout(everyoneDies, 15 * 60 * 1000);
+  state.killedByTimeout = setTimeout(everyoneDies, 5 * 60 * 1000);
 
   // Schedule the next event for tomorrow's window
   scheduleNextEvent(true);
@@ -158,12 +158,12 @@ async function everyoneDies(): Promise<void> {
   const users = await getAllUsers(guildId);
   await killAllUsers(guildId);
 
-  const deathList = users.map((u: { user_id: string }) => `💀 <@${u.user_id}>`).join('\n');
+  const deathList = users.map((u: { user_id: string }) => `<:daviddeath:1513943034738245794> <@${u.user_id}>`).join('\n');
 
   await channel?.send(
-    `💀 **TIME'S UP.** Nobody cracked my evil password.\n\n` +
+    `<:daviddeath:1513943034738245794> **TIME'S UP.** Nobody cracked my evil password.\n\n` +
     `The word was **${word.toUpperCase()}**.\n\n` +
-    `**EVERYONE DIES:**\n` +
+    `**im killing everyone now lol:**\n` +
     (deathList || 'nobody was even in the database lol')
   );
 }

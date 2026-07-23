@@ -37,7 +37,7 @@ export async function execute(interaction: any) {
   if (result.outOfGuesses) {
     await killUser(userId);
     await interaction.reply(
-      `☠️ **${username}** already used all their guesses and tried again anyway. David noticed. **${username} is dead.**`
+      `<:daviddeath:1513943034738245794> **${username}** already used all their guesses and tried again anyway. David noticed. **${username} is dead.**`
     );
     return;
   }
@@ -54,7 +54,7 @@ export async function execute(interaction: any) {
     const guessesLeft = result.guessesRemaining!;
 
     const lastGuessWarning = guessesLeft === 0
-      ? `\n⚠️ **That was your last guess. If you guess again, David will kill you.**`
+      ? `\n<:davidanger:1514871838360993804> **That was your last guess. If you guess again, David will kill you.**`
       : '';
 
     if (sanityResult.died) {

@@ -51,7 +51,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (user.money < cost) {
     await interaction.reply({
-      content: `🔫 Hiring a hitman on **${target.displayName}** costs **$${cost}**. You only have **$${user.money}**. Stay broke.`,
+      content: `🔫 Hiring a hitman on **${target.displayName}** costs **$${cost}**. You only have **$${user.money}**`,
       ephemeral: true,
     });
     return;
@@ -67,12 +67,12 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (roll < chance) {
     await killUser(target.id);
     await interaction.reply(
-      `☠️ **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Damn.\nTheir **$${targetUser.money.toLocaleString()}** fortune made it a **${pct}%** shot. Being rich has consequences.`
+      `<:daviddeath:1513943034738245794> **${interaction.user.displayName}** paid **$${cost}** and successfully had **${target.displayName}** eliminated. Damn.\nTheir **$${targetUser.money.toLocaleString()}** fortune made it a **${pct}%** shot. Being rich has consequences.`
     );
   } else if (roll < chance + BACKFIRE_CHANCE) {
     await killUser(userId);
     await interaction.reply(
-      `💀 **${interaction.user.displayName}** tried to assassinate **${target.displayName}**... and got double-crossed by their own hitman. Paid $${cost} to die lol`
+      `<:daviddeath:1513943034738245794> **${interaction.user.displayName}** tried to assassinate **${target.displayName}**... and got double-crossed by their own hitman. Paid $${cost} to die lol`
     );
   } else {
     await interaction.reply(

@@ -82,7 +82,7 @@ export default {
         await randomizeTemperature(userId);
         if (isSendableChannel(message.channel)) {
           await message.channel.send(
-            `⚠️ **${message.author.displayName}** leveled up to **Level ${newLevel}**! Super Sigma! EVERYONE START FREAKING OUT RIGHT NOW!!!!!111!!!!`
+            `<:davidlevel:1513942942241390744> **${message.author.displayName}** leveled up to **Level ${newLevel}**! Super Sigma! EVERYONE START FREAKING OUT RIGHT NOW!!!!!111!!!!`
           );
         }
       }
@@ -110,7 +110,7 @@ export default {
       } else if (updated.sanity <= 20) {
         if (isSendableChannel(message.channel)) {
           await message.channel.send(
-            `⚠️ **${message.author.displayName}** has ${updated.sanity} sanity left and is hearing the noises`
+            `<:davidsanity:1513942977586659420> **${message.author.displayName}** has ${updated.sanity} sanity left and is hearing the noises`
           );
         }
       }
