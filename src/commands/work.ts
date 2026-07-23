@@ -1,10 +1,11 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser } from '../db/index';
+import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser, setUnemployed, loseSanity } from '../db/index';
 
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 30_000;
 const MAX_PROMOTION_LEVEL = 5;
-const DEMOTION_CHANCE = 0.05;
+const DEMOTION_CHANCE = 0.50;
+const GET_JOB_CHANCE = 0.25;
 
 function getTitle(promotionLevel: number): string {
   if (promotionLevel === 0) return 'Employee';
@@ -29,11 +30,27 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const lastUsed = cooldowns.get(userId) ?? 0;
   const remaining = COOLDOWN_MS - (Date.now() - lastUsed);
   if (remaining > 0) {
-    await interaction.reply({ content: `⏳ You just worked. Wait **${Math.ceil(remaining / 1000)}s** before working again.`, ephemeral: true });
+    if (!user.unemployed) {
+      await interaction.reply({ content: `⏳ You just worked. Wait **${Math.ceil(remaining / 1000)}s** before working again.`, ephemeral: true });
+    }
+    else {
+      await interaction.reply({ content: `⏳ You just tried applying. Wait **${Math.ceil(remaining / 1000)}s** before working again.`, ephemeral: true });
+    }
     return;
   }
 
   cooldowns.set(userId, Date.now());
+
+  if (user.unemployed) {
+    if (Math.random() < GET_JOB_CHANCE) {
+      await setUnemployed(userId, false);
+      await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** did it!! Nice job getting a job!! Your title is now **JOBBER**!!.`);
+    } else {
+      const sanityResult = await loseSanity(userId, guildId, 10);
+      await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** applied for 30 different jobs and got rejected from all of them! Wow! Living is great!!! **${sanityResult.sanity} sanity left.**`);
+      return;
+    }
+  }
 
   const promotionLevel = user.promotion_level ?? 0;
   const multiplier = Math.pow(2, promotionLevel);
@@ -46,10 +63,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   const gotFired = gotDemoted && promotionLevel === 0;
 
   if (gotFired) {
-    await killUser(userId);
+    await setUnemployed(userId, true);
     await interaction.reply(
       `<:davidwork:1514871951808528405> **${interaction.user.displayName}** (${getTitle(promotionLevel)}) worked and earned **$${earned.toLocaleString()}**.\n` +
-      `<:davidtemphot:1513942996641644846> **FIRED!** you were shot in the back alley of the office... `
+      `<:davidtemphot:1513942996641644846> **FIRED!** looks like you gotta look for a job... FUCK. EVERYTHING. `
     );
     return;
   }

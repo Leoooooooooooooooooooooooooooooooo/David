@@ -31,7 +31,8 @@ export async function initDb(): Promise<void> {
       insurance_paid_at   TIMESTAMP,
       hunger              INTEGER NOT NULL DEFAULT 100,
       weight              INTEGER NOT NULL DEFAULT 50,
-      taxes_paid          BOOLEAN NOT NULL DEFAULT FALSE
+      taxes_paid          BOOLEAN NOT NULL DEFAULT FALSE,
+      unemployed           BOOLEAN NOT NULL DEFAULT FALSE
     );
   `);
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS money INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
@@ -46,6 +47,7 @@ export async function initDb(): Promise<void> {
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS taxes_paid BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS promotion_level INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
   await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS gamble_streak INTEGER NOT NULL DEFAULT 0;`).catch(() => {});
+  await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS unemployed BOOLEAN NOT NULL DEFAULT FALSE;`).catch(() => {});
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS david_fund (
@@ -158,6 +160,7 @@ export async function killUser(userId: string) {
          insurance_paid_at = NULL,
          promotion_level = 0,
          gamble_streak = 0,
+         unemployed = FALSE,
          updated_at = NOW()
      WHERE user_id = $1
      RETURNING *`,
@@ -235,6 +238,14 @@ export async function setSick(userId: string, sick: boolean) {
   const res = await pool.query(
     `UPDATE users SET is_sick = $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
     [sick, userId]
+  );
+  return res.rows[0];
+}
+
+export async function setUnemployed(userId: string, employment: boolean) {
+  const res = await pool.query(
+    `UPDATE users SET unemployed = $1, updated_at = NOW() WHERE user_id = $2 RETURNING *`,
+    [employment, userId]
   );
   return res.rows[0];
 }
