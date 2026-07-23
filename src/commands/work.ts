@@ -4,7 +4,7 @@ import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser, 
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 30_000;
 const MAX_PROMOTION_LEVEL = 5;
-const DEMOTION_CHANCE = 0.50;
+const DEMOTION_CHANCE = 0.05;
 const GET_JOB_CHANCE = 0.25;
 
 function getTitle(promotionLevel: number): string {
@@ -45,7 +45,8 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (Math.random() < GET_JOB_CHANCE) {
       await setUnemployed(userId, false);
       await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** did it!! Nice job getting a job!! Your title is now **JOBBER**!!.`);
-    } else {
+    } 
+    else {
       const sanityResult = await loseSanity(userId, guildId, 10);
       await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** applied for 30 different jobs and got rejected from all of them! Wow! Living is great!!! **${sanityResult.sanity} sanity left.**`);
       return;
