@@ -322,9 +322,21 @@ export async function getAllUsers(guildId: string): Promise<{ user_id: string }[
 export async function killAllUsers(guildId: string): Promise<void> {
   await pool.query(`
     UPDATE users
-    SET xp = 0, level = 1, status = 0, sanity = 100, deaths = deaths + 1,
-        hunger = 100, weight = 50, dryness = 50, money = 0,
-        is_sick = FALSE, insurance_paid = FALSE, insurance_paid_at = NULL,
+    SET xp = 0, 
+        level = 1, 
+        status = 0, 
+        sanity = 100, 
+        deaths = deaths + 1,
+        hunger = 100,
+        weight = 50, 
+        dryness = 50, 
+        money = 0,
+        is_sick = FALSE, 
+        insurance_paid = FALSE, 
+        insurance_paid_at = NULL,
+        promotion_level = 0,
+        gamble_streak = 0,
+        unemployed = FALSE,
         updated_at = NOW()
     WHERE guild_id = $1
   `, [guildId]);
