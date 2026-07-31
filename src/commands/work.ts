@@ -45,7 +45,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     if (Math.random() < GET_JOB_CHANCE) {
       await setUnemployed(userId, false);
       await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** did it!! Nice job getting a job!! Your title is now **JOBBER**!!.`);
-    } 
+    }
     else {
       const sanityResult = await loseSanity(userId, guildId, 10);
       await interaction.reply(`<:davidwork:1514871951808528405> **${interaction.user.displayName}** applied for 30 different jobs and got rejected from all of them! Wow! Living is great!!! **${sanityResult.sanity} sanity left.**`);
@@ -65,10 +65,15 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   if (gotFired) {
     await setUnemployed(userId, true);
-    await interaction.reply(
-      `<:davidwork:1514871951808528405> **${interaction.user.displayName}** (${getTitle(promotionLevel)}) worked and earned **$${earned.toLocaleString()}**.\n` +
-      `<:davidtemphot:1513942996641644846> **FIRED!** looks like you gotta look for a job... FUCK. EVERYTHING. `
-    );
+    await addMoney(userId, earned);
+    if (interaction.replied) {
+      await interaction.followUp(`You literally are so buns you got fired after getting hired in one second bro...`);
+    } else {
+      await interaction.reply(
+        `<:davidwork:1514871951808528405> **${interaction.user.displayName}** (${getTitle(promotionLevel)}) worked and earned **$${earned.toLocaleString()}**.\n` +
+        `<:davidtemphot:1513942996641644846> **FIRED!** looks like you gotta look for a job... FUCK. EVERYTHING. `
+      );
+    }
     return;
   }
 
@@ -94,7 +99,10 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     ? `\n📉 **DEMOTED!** You are now **${newTitle}**, you fat chud!`
     : '';
 
-  await interaction.reply(
-    `<:davidwork:1514871951808528405> **${interaction.user.displayName}** (${title}) worked and earned **$${earned.toLocaleString()}**.${sickLine}${promotionLine}`
-  );
+  const shiftMessage = `<:davidwork:1514871951808528405> **${interaction.user.displayName}** (${title}) worked and earned **$${earned.toLocaleString()}**.${sickLine}${promotionLine}`;
+  if (interaction.replied) {
+    await interaction.followUp(shiftMessage);
+  } else {
+    await interaction.reply(shiftMessage);
+  }
 }
