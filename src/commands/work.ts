@@ -3,7 +3,7 @@ import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser, 
 
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 30_000;
-const MAX_PROMOTION_LEVEL = 30;
+const MAX_PROMOTION_LEVEL = 70;
 const DEMOTION_CHANCE = 0.05;
 const GET_JOB_CHANCE = 0.25;
 
