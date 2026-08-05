@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, ChatInputCommandInteraction } from 'discord.js';
-import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser, setUnemployed, loseSanity } from '../db/index';
+import { getOrCreateUser, addMoney, setSick, promoteUser, demoteUser, killUser, setUnemployed, loseSanity, rebirthUser } from '../db/index';
 
 const cooldowns = new Map<string, number>();
 const COOLDOWN_MS = 30_000;
@@ -7,9 +7,10 @@ const MAX_PROMOTION_LEVEL = 30;
 const DEMOTION_CHANCE = 0.05;
 const GET_JOB_CHANCE = 0.25;
 
-function getTitle(promotionLevel: number): string {
-  if (promotionLevel === 0) return 'Employee';
-  return `Employee ${'+'.repeat(promotionLevel)}`;
+function getTitle(promotionLevel: number, rebirths = 0): string {
+  const stars = '*'.repeat(rebirths);
+  if (promotionLevel === 0) return `Employee${stars}`;
+  return `Employee ${'+'.repeat(promotionLevel)}${stars}`;
 }
 
 export const data = new SlashCommandBuilder()
@@ -81,19 +82,29 @@ export async function execute(interaction: ChatInputCommandInteraction) {
   if (gotSick) await setSick(userId, true);
 
   let newPromoLevel = promotionLevel;
+  let rebirths = user.rebirths ?? 0;
+  let didRebirth = false;
   if (gotPromoted) {
     const updated = await promoteUser(userId);
     newPromoLevel = updated.promotion_level;
+    if (newPromoLevel >= MAX_PROMOTION_LEVEL) {
+      const reborn = await rebirthUser(userId);
+      newPromoLevel = reborn.promotion_level;
+      rebirths = reborn.rebirths;
+      didRebirth = true;
+    }
   } else if (gotDemoted) {
     const updated = await demoteUser(userId);
     newPromoLevel = updated.promotion_level;
   }
 
-  const title = getTitle(promotionLevel);
-  const newTitle = getTitle(newPromoLevel);
+  const title = getTitle(promotionLevel, user.rebirths ?? 0);
+  const newTitle = getTitle(newPromoLevel, rebirths);
 
   const sickLine = gotSick ? `\nYou just got Ebola lol` : '';
-  const promotionLine = gotPromoted
+  const promotionLine = didRebirth
+    ? `\n<:davidwork:1514871951808528405> **REBIRTH!** You worked so hard you exploded and started over as **${newTitle}**!`
+    : gotPromoted
     ? `\n<:davidwork:1514871951808528405> **PROMOTED!** You are now **${newTitle}**!`
     : gotDemoted
     ? `\n📉 **DEMOTED!** You are now **${newTitle}**, you fat chud!`
